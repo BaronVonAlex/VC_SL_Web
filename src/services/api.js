@@ -7,7 +7,12 @@ const KIXEYE_AVATAR_API_URL = process.env.REACT_APP_KIXEYE_AVATAR_API_URL;
 const GAME_ID = process.env.REACT_APP_GAME_ID;
 
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+const API_SECRET = process.env.REACT_APP_API_SECRET;
 
+const getHeaders = () => ({
+  'X-API-Key': API_SECRET,
+  'Content-Type': 'application/json'
+});
 
 export const fetchUserId = async (playerID) => {
   const userGameApiUrl = `${USER_GAME_API_URL}${playerID}&limit=100`;
@@ -45,14 +50,20 @@ export const fetchUserAvatar = async (userId) => {
 
 export const createOrGetUser = async (playerID, currentUsername) => {
   try {
-    const getResponse = await axios.get(`${BACKEND_API_URL}/api/Users/GetUser/${playerID}`);
+    const getResponse = await axios.get(
+      `${BACKEND_API_URL}/api/Users/GetUser/${playerID}`,
+      { headers: getHeaders() }
+    );
     
     const existingHistory = getResponse.data.usernameHistory || [];
     
     if (!existingHistory.includes(currentUsername)) {
       await updateUsernameHistory(playerID, currentUsername);
       
-      const updatedResponse = await axios.get(`${BACKEND_API_URL}/api/Users/GetUser/${playerID}`);
+      const updatedResponse = await axios.get(
+        `${BACKEND_API_URL}/api/Users/GetUser/${playerID}`,
+        { headers: getHeaders() }
+      );
       return updatedResponse.data;
     }
     
@@ -60,10 +71,14 @@ export const createOrGetUser = async (playerID, currentUsername) => {
   } catch (error) {
     if (error.response && error.response.status === 404) {
       try {
-        const createResponse = await axios.post(`${BACKEND_API_URL}/api/Users/CreateUser`, {
-          id: playerID,
-          usernameHistory: currentUsername
-        });
+        const createResponse = await axios.post(
+          `${BACKEND_API_URL}/api/Users/CreateUser`,
+          {
+            id: playerID,
+            usernameHistory: currentUsername
+          },
+          { headers: getHeaders() }
+        );
         return createResponse.data;
       } catch (createError) {
         console.error('Error creating user:', createError);
@@ -77,9 +92,13 @@ export const createOrGetUser = async (playerID, currentUsername) => {
 
 export const updateUsernameHistory = async (playerID, newUsername) => {
   try {
-    const response = await axios.put(`${BACKEND_API_URL}/api/Users/UpdateUser/${playerID}`, {
-      usernameHistory: newUsername
-    });
+    const response = await axios.put(
+      `${BACKEND_API_URL}/api/Users/UpdateUser/${playerID}`,
+      {
+        usernameHistory: newUsername
+      },
+      { headers: getHeaders() }
+    );
     return response.data;
   } catch (error) {
     console.error('Error updating username history:', error);
@@ -89,9 +108,13 @@ export const updateUsernameHistory = async (playerID, newUsername) => {
 
 export const getWinrateForUser = async (userId, year) => {
   try {
-    const response = await axios.get(`${BACKEND_API_URL}/api/Winrate/GetWinrateForUser`, {
-      params: { userId, year }
-    });
+    const response = await axios.get(
+      `${BACKEND_API_URL}/api/Winrate/GetWinrateForUser`,
+      {
+        params: { userId, year },
+        headers: getHeaders()
+      }
+    );
     return Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     if (error.response && error.response.status === 404) {
@@ -116,7 +139,11 @@ export const updateWinrateStats = async (userId, month, year, winrateData) => {
 
     console.log('Sending winrate data to backend:', sanitizedData);
 
-    const response = await axios.post(`${BACKEND_API_URL}/api/Winrate/UpdateWinrate`, sanitizedData);
+    const response = await axios.post(
+      `${BACKEND_API_URL}/api/Winrate/UpdateWinrate`,
+      sanitizedData,
+      { headers: getHeaders() }
+    );
     return response.data;
   } catch (error) {
     console.error('Error updating winrate stats:', error);
@@ -161,7 +188,7 @@ export const fetchPlayerDetails = async (playerID, year) => {
     console.log('Calculated winrates:', currentWinrates);
 
     const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1; // 1-12
+    const currentMonth = currentDate.getMonth() + 1;
     const currentYear = currentDate.getFullYear();
     const searchYear = year || currentYear;
     
