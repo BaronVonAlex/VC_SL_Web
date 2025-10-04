@@ -1,0 +1,225 @@
+body {
+  background-color: #f4f4f9;
+  color: #333;
+
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.player-card {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #232c535b 0%, #3a25504f 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid #2a2b2e;
+  color: #e1e2e6;
+}
+
+.player-card-content {
+  display: grid;
+  grid-template-columns: minmax(250px, 1fr) 3fr;
+  gap: 2rem;
+}
+
+.player-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 1rem;
+  object-fit: cover;
+  margin-bottom: 1.5rem;
+  border: 2px solid #ed00f5;
+}
+
+h2 {
+  font-weight: 600;
+  background: linear-gradient(135deg, #ffffff, #8b5cf6);
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+}
+
+.sidebar {
+  background-color: #2a2b2e;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.combat-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  background-color: #2a2b2e;
+  padding: 1.5rem;
+  border-radius: 1rem;
+}
+
+.combat-bar {
+  background-color: #323336;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid #3a3b3e;
+  transition: transform 0.2s ease;
+  
+  display: flexbox;       
+  justify-content: center;
+  align-items: center;    
+  text-align: center;     
+}
+.combat-bar:hover {
+  transform: translateY(-2px);
+}
+
+.combat-bar h4 {
+  color: #a5a6ab;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.battle-breakdown {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.win, .draw, .loss{
+  display: inline-block;
+  width: auto;
+  min-width: 50px;
+  padding: 0 10px;
+  height: 24px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.win {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff;
+}
+
+.draw {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  color: rgb(0, 0, 0);
+  display: inline-block;
+  width: auto;
+  min-width: 50px;
+  height: 24px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.loss {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+}
+
+.total{
+  margin-top: 5px;
+  background: linear-gradient(135deg, #0051ff, #0011ff);
+  color: #ffffff;
+
+  display: inline-block;
+  width: auto;
+  min-width: 50px;
+  padding: 0 10px; 
+  height: 24px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.historical-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;
+  border-radius: 0.75rem;
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #2a2b2e;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+.historical-data .chart {
+  display: block;
+  width: fit-content;
+  height: fit-content;
+  margin: 0 auto;
+  text-align: center; 
+}
+.graph-placeholder {
+  background-color: #323336;
+  height: 240px;
+  border-radius: 0.75rem;
+  color: #71717a;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .player-card-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 20px auto;
+  backdrop-filter: blur(10px);
+}
+
+.search-input,
+.year-input {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #920072;
+  width: 200px;
+  min-width: 150px;
+}
+
+.search-input:focus,
+.year-input:focus {
+  border-color: #5f003b;
+  outline: none;
+}
+
+.search-button {
+  padding: 10px 20px;
+  background-color: #3a0027;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-button:hover {
+  background-color: #52001f;
+}
+
+.search-button:active {
+  background-color: #d3003f;
+}
+
+.search-button svg {
+  font-size: 18px;
+}
