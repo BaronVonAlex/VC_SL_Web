@@ -43,6 +43,7 @@ h2 {
   font-weight: 600;
   background: linear-gradient(135deg, #ffffff, #8b5cf6);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
   margin-bottom: 1rem;
 }
@@ -184,8 +185,7 @@ h2 {
   backdrop-filter: blur(10px);
 }
 
-.search-input,
-.year-input {
+.search-input {
   padding: 10px;
   font-size: 16px;
   border-radius: 4px;
@@ -194,8 +194,7 @@ h2 {
   min-width: 150px;
 }
 
-.search-input:focus,
-.year-input:focus {
+.search-input:focus {
   border-color: #5f003b;
   outline: none;
 }
@@ -222,4 +221,9 @@ h2 {
 
 .search-button svg {
   font-size: 18px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

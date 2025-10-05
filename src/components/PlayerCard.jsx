@@ -1,10 +1,9 @@
-import React from 'react';
 import PlayerDetails from './PlayerDetails';
 import AdditionalInfo from './AdditionalInfo';
 import CombatStats from './CombatStats';
 import HistoricalData from './HistoricalData';
 
-const PlayerCard = ({ playerData, historicalStats, usernameHistory }) => {
+const PlayerCard = ({ playerData, historicalStats, usernameHistory, onYearChange, currentYear }) => {
   if (!playerData) return null;
 
   return (
@@ -19,7 +18,12 @@ const PlayerCard = ({ playerData, historicalStats, usernameHistory }) => {
 
         <div className="main-content">
           <CombatStats playerData={playerData} />
-          <HistoricalData historicalStats={historicalStats} playerID={playerData.playerId} />
+          <HistoricalData 
+            historicalStats={historicalStats} 
+            playerID={playerData.playerId}
+            onYearChange={onYearChange}
+            currentYear={currentYear}
+          />
         </div>
       </div>
     </div>
