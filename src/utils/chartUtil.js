@@ -83,7 +83,7 @@ export async function generateChartUrl(playerID, historicalData) {
       },
     };
 
-    const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartData))}`;
+    const chartUrl = `https://quickchart.io/chart?width=1000&height=500&c=${encodeURIComponent(JSON.stringify(chartData))}`;
     return chartUrl;
   }
 
@@ -105,7 +105,8 @@ export async function generateChartUrl(playerID, historicalData) {
           backgroundColor: 'rgba(239, 68, 68, 0.1)',
           fill: false,
           tension: 0.4,
-          spanGaps: true, // Connect lines even if there are null values
+          spanGaps: true,
+          borderWidth: 3,
         },
         {
           label: 'Base Attack',
@@ -115,6 +116,7 @@ export async function generateChartUrl(playerID, historicalData) {
           fill: false,
           tension: 0.4,
           spanGaps: true,
+          borderWidth: 3,
         },
         {
           label: 'Base Defense',
@@ -124,6 +126,7 @@ export async function generateChartUrl(playerID, historicalData) {
           fill: false,
           tension: 0.4,
           spanGaps: true,
+          borderWidth: 3,
         },
       ],
     },
@@ -135,13 +138,29 @@ export async function generateChartUrl(playerID, historicalData) {
           max: yMax,
           title: {
             display: true,
-            text: 'Winrate (%)'
+            text: 'Winrate (%)',
+            font: {
+              size: 14
+            }
+          },
+          ticks: {
+            font: {
+              size: 12
+            }
           }
         },
         x: {
           title: {
             display: true,
-            text: 'Month'
+            text: 'Month',
+            font: {
+              size: 14
+            }
+          },
+          ticks: {
+            font: {
+              size: 12
+            }
           }
         }
       },
@@ -149,15 +168,24 @@ export async function generateChartUrl(playerID, historicalData) {
         legend: {
           display: true,
           position: 'top',
+          labels: {
+            font: {
+              size: 14
+            },
+            padding: 15
+          }
         },
         title: {
           display: true,
-          text: 'Monthly Winrate History'
+          text: 'Monthly Winrate History',
+          font: {
+            size: 16
+          }
         }
       }
     },
   };
 
-  const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartData))}`;
+  const chartUrl = `https://quickchart.io/chart?width=1000&height=500&c=${encodeURIComponent(JSON.stringify(chartData))}`;
   return chartUrl;
 }

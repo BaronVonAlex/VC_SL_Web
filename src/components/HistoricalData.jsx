@@ -31,10 +31,12 @@ const HistoricalData = ({ historicalStats, playerID, onYearChange, currentYear }
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '1rem'
+        marginBottom: '1rem',
+        width: '100%'
       }}>
+        <h3 style={{ margin: 0, color: '#e1e2e6' }}>Winrate History</h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <h3 style={{ color: '#ffffffff', fontSize: '1.4rem' }}>Year:</h3>
+          <label style={{ color: '#a5a6ab', fontSize: '0.9rem' }}>Year:</label>
           <select 
             value={selectedYear}
             onChange={handleYearChange}
@@ -60,18 +62,19 @@ const HistoricalData = ({ historicalStats, playerID, onYearChange, currentYear }
 
       <Chart playerID={playerID} historicalStats={stats} />
       
-      {stats.length > 0 && (
+      {/* {stats.length > 0 && (
         <div style={{
           marginTop: '1rem',
           padding: '1rem',
-          backgroundColor: '#2a2b2e',
+          backgroundColor: '#323336',
           borderRadius: '0.75rem',
           color: '#a5a6ab',
-          fontSize: '0.875rem'
+          fontSize: '0.875rem',
+          width: '100%'
         }}>
-          <p><strong>Data Points:</strong> {stats.length} month(s) recorded for {selectedYear}</p>
+          <p style={{ margin: 0 }}><strong>Data Points:</strong> {stats.length} month(s) recorded for {selectedYear}</p>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -71,7 +71,7 @@ const SearchPage = () => {
             padding: '2rem',
             backgroundColor: 'rgba(139, 92, 246, 0.15)',
             borderRadius: '1rem',
-            border: '2px solid rgba(0, 255, 234, 1)',
+            border: '2px solid rgba(139, 92, 246, 0.4)',
             backdropFilter: 'blur(10px)',
             maxWidth: '400px',
             margin: '3rem auto'
@@ -79,7 +79,7 @@ const SearchPage = () => {
             <div style={{
               width: '50px',
               height: '50px',
-              border: '4px solid rgba(0, 225, 255, 0.58)',
+              border: '4px solid rgba(139, 92, 246, 0.3)',
               borderTop: '4px solid #8b5cf6',
               borderRadius: '50%',
               animation: 'spin 1s linear infinite',

@@ -28,7 +28,6 @@ const Chart = ({ playerID, historicalStats }) => {
   if (loading) {
     return (
       <div className="chart">
-        <h3>Winrate History</h3>
         <div style={{
           backgroundColor: '#323336',
           padding: '2rem',
@@ -45,7 +44,6 @@ const Chart = ({ playerID, historicalStats }) => {
   if (error) {
     return (
       <div className="chart">
-        <h3>Winrate History</h3>
         <div style={{
           backgroundColor: '#323336',
           padding: '2rem',
@@ -62,7 +60,6 @@ const Chart = ({ playerID, historicalStats }) => {
   if (!historicalStats || historicalStats.length === 0) {
     return (
       <div className="chart">
-        <h3>Winrate History</h3>
         <div style={{
           backgroundColor: '#323336',
           padding: '2rem',
@@ -82,13 +79,12 @@ const Chart = ({ playerID, historicalStats }) => {
 
   return (
     <div className="chart">
-      <h3>Winrate History</h3>
       <img 
         src={chartUrl} 
         alt="Winrate History Chart" 
         style={{ 
-          width: '100%', 
-          maxWidth: '600px',
+          width: '100%',
+          height: 'auto',
           borderRadius: '0.5rem'
         }}
         onError={(e) => {
