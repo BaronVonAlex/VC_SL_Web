@@ -63,7 +63,7 @@ const SearchBar = ({ onSearch, hasResults, onReset }) => {
     <div className={`search-container ${hasResults ? 'compact' : 'centered'}`}>
       {!hasResults && (
         <div className="search-header">
-          <h1 className="search-title">VC_SL Player Stats</h1>
+          <h1 className="search-title">Vega Conflict Player Lookup</h1>
           <p className="search-subtitle">Search for player statistics and battle history</p>
         </div>
       )}

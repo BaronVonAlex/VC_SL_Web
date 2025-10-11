@@ -17,7 +17,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1>VC_SL Player Stats</h1>
+      <h1>Vega Conflict Player Lookup</h1>
       <SearchBar onSearch={handleSearch} />
       {playerData && (
         <div>
