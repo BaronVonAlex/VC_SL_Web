@@ -59,7 +59,10 @@ const SearchPage = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <SearchBar onSearch={handleSearch} />
+        <SearchBar 
+          onSearch={handleSearch} 
+          hasResults={playerData !== null || loading}
+        />
         
         {loading && (
           <div style={{ 

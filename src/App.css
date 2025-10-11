@@ -1,17 +1,13 @@
 body {
   background-color: #f4f4f9;
   color: #333;
-
   margin: 0;
   padding: 0;
   padding-left: 10rem;
   padding-right: 10rem;
   height: 100%;
   box-sizing: border-box;
-}
-
-body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(1355deg, #667eea 0%, #764ba2 100%);
 }
 
 .player-card {
@@ -24,6 +20,7 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   border: 1px solid #2a2b2e;
   color: #e1e2e6;
+  animation: fadeInCard 0.5s ease-out;
 }
 
 .player-card-content {
@@ -40,6 +37,11 @@ body {
   margin: 0 auto 1.5rem auto;
   display: block;
   border: 2px solid #ed00f5;
+  transition: transform 0.3s ease;
+}
+
+.player-avatar:hover {
+  transform: scale(1.05);
 }
 
 h2 {
@@ -63,6 +65,11 @@ h2 {
   background-color: #1a1b1e;
   padding: 1.5rem;
   border-radius: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.sidebar-section:hover {
+  transform: translateY(-2px);
 }
 
 .sidebar-title {
@@ -99,6 +106,7 @@ h2 {
   font-size: 1rem;
   font-weight: 600;
   text-align: right;
+  word-break: break-word;
 }
 
 .player-name {
@@ -126,15 +134,16 @@ h2 {
   padding: 1.25rem;
   border-radius: 0.75rem;
   border: 1px solid #3a3b3e;
-  transition: transform 0.2s ease;
-  
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flexbox;       
   justify-content: center;
   align-items: center;    
   text-align: center;     
 }
+
 .combat-bar:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
 }
 
 .combat-bar h4 {
@@ -148,7 +157,7 @@ h2 {
   align-items: center;
 }
 
-.win, .draw, .loss{
+.win, .draw, .loss {
   display: inline-block;
   width: auto;
   min-width: 50px;
@@ -179,11 +188,10 @@ h2 {
   color: #ffffff;
 }
 
-.total{
+.total {
   margin-top: 5px;
   background: linear-gradient(135deg, #0051ff, #0011ff);
   color: #ffffff;
-
   display: inline-block;
   width: auto;
   min-width: 50px;
@@ -217,6 +225,7 @@ h2 {
   height: auto;
   display: block;
 }
+
 .graph-placeholder {
   background-color: #323336;
   height: 240px;
@@ -225,65 +234,131 @@ h2 {
   font-weight: 500;
 }
 
-@media (max-width: 768px) {
-  .player-card-content {
-    grid-template-columns: 1fr;
-  }
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 20px auto;
-  backdrop-filter: blur(10px);
-}
-
-.search-input {
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 4px;
-  border: 1px solid #920072;
-  width: 200px;
-  min-width: 150px;
-}
-
-.search-input:focus {
-  border-color: #5f003b;
-  outline: none;
-}
-
-.search-button {
-  padding: 10px 20px;
-  background-color: #3a0027;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.search-button:hover {
-  background-color: #52001f;
-}
-
-.search-button:active {
-  background-color: #d3003f;
-}
-
-.search-button svg {
-  font-size: 18px;
-}
-
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tablet Responsive */
+@media (max-width: 1024px) {
+  body {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+
+  .player-card-content {
+    grid-template-columns: 1fr;
+  }
+
+  .combat-stats {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  body {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .player-card {
+    padding: 1rem;
+  }
+
+  .player-card-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .sidebar {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .sidebar-section {
+    padding: 1rem;
+  }
+
+  .player-name {
+    font-size: 1.75rem;
+    text-align: center;
+  }
+
+  .player-avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .combat-stats {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .historical-data {
+    padding: 1rem;
+  }
+
+  .info-label,
+  .info-value {
+    font-size: 0.9rem;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  body {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .player-card {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+  }
+
+  .player-name {
+    font-size: 1.5rem;
+  }
+
+  .sidebar {
+    padding: 0.75rem;
+  }
+
+  .sidebar-section {
+    padding: 0.75rem;
+  }
+
+  .sidebar-title {
+    font-size: 0.75rem;
+  }
+
+  .combat-bar {
+    padding: 1rem;
+  }
+
+  .combat-bar h4 {
+    font-size: 0.9rem;
+  }
+
+  .info-label,
+  .info-value {
+    font-size: 0.85rem;
+  }
+
+  .historical-data {
+    padding: 0.75rem;
+  }
 }
