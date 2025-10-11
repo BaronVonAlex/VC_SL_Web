@@ -13,6 +13,7 @@ const SearchPage = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
 
   const handleSearch = async (playerID) => {
     setError('');
@@ -31,15 +32,26 @@ const SearchPage = () => {
       setPlayerData({ ...playerData, avatarUrl });
       setHistoricalStats(historicalStats);
       setUsernameHistory(usernameHistory);
+      setShowResults(true);
     } catch (err) {
       console.error('Search error:', err);
       setError('Failed to fetch player data. Please check the Player ID and try again.');
       setPlayerData(null);
       setHistoricalStats(null);
       setUsernameHistory(null);
+      setShowResults(false);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleReset = () => {
+    setPlayerData(null);
+    setHistoricalStats(null);
+    setUsernameHistory(null);
+    setCurrentPlayerID(null);
+    setError('');
+    setShowResults(false);
   };
 
   const handleYearChange = async (year) => {
@@ -61,7 +73,8 @@ const SearchPage = () => {
       <header className="App-header">
         <SearchBar 
           onSearch={handleSearch} 
-          hasResults={playerData !== null || loading}
+          hasResults={showResults}
+          onReset={handleReset}
         />
         
         {loading && (

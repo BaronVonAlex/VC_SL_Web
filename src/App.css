@@ -3,11 +3,12 @@ body {
   color: #333;
   margin: 0;
   padding: 0;
+  padding-top: 2rem;
   padding-left: 10rem;
   padding-right: 10rem;
   height: 100%;
   box-sizing: border-box;
-  background: linear-gradient(1355deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
 }
 
 .player-card {
