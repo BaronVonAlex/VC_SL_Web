@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaTrophy, FaMedal, FaFilter, FaChartLine } from 'react-icons/fa';
 import { fetchLeaderboard } from '../services/api';
 import '../styles/Leaderboard.css';
 
-const Leaderboard = ({ onPlayerClick }) => {
+const Leaderboard = () => {
+  const navigate = useNavigate();
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -14,7 +16,7 @@ const Leaderboard = ({ onPlayerClick }) => {
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
     limit: 100,
-    minimumMonths: 1
+    minimumMonths: 2 // This if for minumum months played filter
   });
 
   const periodOptions = [
@@ -57,6 +59,11 @@ const Leaderboard = ({ onPlayerClick }) => {
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handlePlayerClick = (playerId) => {
+    // Navigate to search page and trigger search via state
+    navigate('/', { state: { searchPlayerId: playerId } });
   };
 
   const getRankIcon = (rank) => {
@@ -196,7 +203,7 @@ const Leaderboard = ({ onPlayerClick }) => {
               <div
                 key={player.userId}
                 className="table-row"
-                onClick={() => onPlayerClick && onPlayerClick(player.userId)}
+                onClick={() => handlePlayerClick(player.userId)}
               >
                 <div className="rank-cell">
                   {getRankIcon(player.rank)}

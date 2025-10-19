@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import SearchBar from './SearchBar';
 import PlayerCard from './PlayerCard';
 import { fetchPlayerDetails } from '../services/api';
 import { getWinrateForUser } from '../services/api';
-import '../styles/SearchPage.css';
 
 const SearchPage = () => {
+  const location = useLocation();
   const [playerData, setPlayerData] = useState(null);
   const [historicalStats, setHistoricalStats] = useState(null);
   const [usernameHistory, setUsernameHistory] = useState(null);
@@ -14,6 +15,14 @@ const SearchPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.searchPlayerId) {
+      const playerId = location.state.searchPlayerId;
+      handleSearch(playerId);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleSearch = async (playerID) => {
     setError('');

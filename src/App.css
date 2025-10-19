@@ -3,9 +3,6 @@ body {
   color: #333;
   margin: 0;
   padding: 0;
-  /* padding-top: 2rem;
-  padding-left: 10rem;
-  padding-right: 10rem; */
   height: 100%;
   box-sizing: border-box;
   background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
@@ -15,8 +12,7 @@ body {
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  padding: 1.5rem;
-  border-radius: 1rem;
+  padding: 2rem;
   background: linear-gradient(135deg, #232c535b 0%, #3a25504f 100%);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   border: 1px solid #2a2b2e;
@@ -49,6 +45,8 @@ h2 {
   font-weight: 600;
   background: linear-gradient(135deg, #ffffff, #8b5cf6);
   -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   color: transparent;
   margin-bottom: 1rem;
 }
@@ -253,11 +251,6 @@ h2 {
 
 /* Tablet Responsive */
 @media (max-width: 1024px) {
-  body {
-    padding-left: 5rem;
-    padding-right: 5rem;
-  }
-
   .player-card-content {
     grid-template-columns: 1fr;
   }
@@ -269,11 +262,6 @@ h2 {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-  body {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-
   .player-card {
     padding: 1rem;
   }
@@ -320,14 +308,8 @@ h2 {
 
 /* Small Mobile */
 @media (max-width: 480px) {
-  body {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
   .player-card {
     padding: 0.75rem;
-    border-radius: 0.75rem;
   }
 
   .player-name {

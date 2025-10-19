@@ -1,15 +1,9 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import SearchPage from './components/SearchPage';
 import Leaderboard from './components/Leaderboard';
 import './App.css';
 
 const App = () => {
-  const handlePlayerClick = (playerId) => {
-    // this shit is broken kekw
-    window.location.href = `/?playerId=${playerId}`;
-  };
-
   return (
     <Router>
       <div className="App">
@@ -26,10 +20,7 @@ const App = () => {
         
         <Routes>
           <Route path="/" element={<SearchPage />} />
-          <Route 
-            path="/leaderboard" 
-            element={<Leaderboard onPlayerClick={handlePlayerClick} />} 
-          />
+          <Route path="/leaderboard" element={<Leaderboard />} />
         </Routes>
       </div>
     </Router>
