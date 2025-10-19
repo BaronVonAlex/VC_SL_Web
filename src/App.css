@@ -3,9 +3,9 @@ body {
   color: #333;
   margin: 0;
   padding: 0;
-  padding-top: 2rem;
+  /* padding-top: 2rem;
   padding-left: 10rem;
-  padding-right: 10rem;
+  padding-right: 10rem; */
   height: 100%;
   box-sizing: border-box;
   background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
@@ -361,5 +361,66 @@ h2 {
 
   .historical-data {
     padding: 0.75rem;
+  }
+}
+
+.main-nav {
+  background: linear-gradient(135deg, #1a1b1e 0%, #2a2b2e 100%);
+  border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  gap: 0;
+  padding: 0 2rem;
+}
+
+.nav-link {
+  padding: 1.25rem 2rem;
+  color: #a5a6ab;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.nav-link.active {
+  color: #8b5cf6;
+  border-bottom-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0 1rem;
+  }
+
+  .nav-link {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0 0.5rem;
+  }
+
+  .nav-link {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
   }
 }

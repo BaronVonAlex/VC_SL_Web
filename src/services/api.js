@@ -173,6 +173,43 @@ export const updateWinrateStats = async (userId, month, year, winrateData) => {
   }
 };
 
+export const fetchLeaderboard = async (filters) => {
+  try {
+    const params = {
+      period: filters.period,
+      category: filters.category,
+      limit: filters.limit,
+      minimumMonths: filters.minimumMonths
+    };
+
+    if (filters.period === 0) {
+      params.month = filters.month;
+      params.year = filters.year;
+    } else if (filters.period === 1) {
+      params.year = filters.year;
+    }
+
+    console.log('Fetching leaderboard with params:', params);
+
+    const response = await axios.get(
+      `${BACKEND_API_URL}/api/Leaderboard`,
+      { 
+        params,
+        headers: getHeaders() 
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    if (error.response && error.response.status === 400) {
+      throw new Error('Invalid filter parameters');
+    }
+    throw error;
+  }
+};
+
+
 export const fetchPlayerDetails = async (playerID, year) => {
   try {
     console.log(`Starting fetch for player ID: ${playerID}`);
