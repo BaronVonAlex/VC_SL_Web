@@ -1,70 +1,190 @@
-# Getting Started with Create React App
+# Vega Conflict Player Lookup
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React-based web application for searching and displaying Vega Conflict player statistics, battle history, and leaderboards.
+
+## Features
+
+- **Player Search**: Look up players by their Player ID to view detailed statistics
+- **Combat Statistics**: View comprehensive battle stats including:
+  - Fleet vs Fleet battles
+  - Base Attack performance
+  - Base Defence performance
+  - Win/Loss/Draw ratios and K/D ratios
+- **Historical Data**: Track player winrate history over time with interactive charts
+- **Leaderboard**: Browse top players with customizable filters:
+  - Period selection (Monthly, Yearly, All Time)
+  - Category filters (Combined, Base Attack, Base Defence, Fleet)
+  - Minimum months played filter
+- **Username History**: Track player name changes over time
+- **Responsive Design**: Fully responsive interface optimized for desktop, tablet, and mobile devices
+
+## Tech Stack
+
+- **Frontend**: React 19.2.0
+- **Routing**: React Router DOM 7.9.3
+- **HTTP Client**: Axios 1.12.2
+- **Styling**: Custom CSS with gradient themes
+- **Icons**: React Icons 5.5.0
+- **Charts**: QuickChart API for historical data visualization
+- **Build Tool**: Create React App
+
+## Prerequisites
+
+- Node.js (v14 or higher recommended)
+- npm or yarn package manager
+- Access to the required API endpoints (configured via environment variables)
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd vc_sl_web
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Create a `.env` file in the root directory with the following variables:
+```env
+REACT_APP_STATS_API_URL=<your-stats-api-url>
+REACT_APP_USER_GAME_API_URL=<your-user-game-api-url>
+REACT_APP_KIXEYE_AVATAR_API_URL=<your-avatar-api-url>
+REACT_APP_GAME_ID=<your-game-id>
+REACT_APP_BACKEND_API_URL=<your-backend-api-url>
+REACT_APP_API_SECRET=<your-api-secret>
+```
 
 ## Available Scripts
 
-In the project directory, you can run:
-
 ### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Runs the app in development mode at [http://localhost:3000](http://localhost:3000)
 
 ### `npm run build`
+Builds the app for production to the `build` folder with optimized performance
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `npm test`
+Launches the test runner in interactive watch mode
 
 ### `npm run eject`
+**Note**: This is a one-way operation. Ejects from Create React App for full configuration control
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Project Structure
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+src/
+├── components/          # React components
+│   ├── SearchPage.jsx   # Main search interface
+│   ├── PlayerCard.jsx   # Player information display
+│   ├── SearchBar.jsx    # Search input component
+│   ├── CombatStats.jsx  # Battle statistics display
+│   ├── Chart.jsx        # Historical data chart
+│   ├── Leaderboard.jsx  # Leaderboard component
+│   └── HistoricalData.jsx # Historical stats wrapper
+├── services/            # API service layer
+│   └── api.js          # API calls and data fetching
+├── styles/             # Component-specific styles
+│   ├── SearchBar.css
+│   └── Leaderboard.css
+├── utils/              # Utility functions
+│   ├── statsUtil.js    # Stats calculations
+│   └── chartUtil.js    # Chart generation
+├── App.js              # Main app component with routing
+├── App.css             # Global styles
+└── index.js            # Application entry point
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Key Features Explained
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Player Search
+- Enter a Player ID to fetch comprehensive player statistics
+- View real-time data including level, medals, and planet information
+- Track player activity with "Last Seen" timestamps
 
-## Learn More
+### Combat Statistics
+- **Fleet vs Fleet**: Space combat performance metrics
+- **Base Attack**: Offensive base raid statistics
+- **Base Defence**: Defensive performance against raids
+- Each category shows wins, draws, losses, winrate percentage, and K/D ratio
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Historical Winrate Tracking
+- Monthly winrate data stored and displayed over time
+- Interactive line charts showing trends across three battle categories
+- Year selector to view historical performance from 2013 onwards
+- Automatic data updates when searching in the current year
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Leaderboard System
+- Filter by time period: Monthly, Yearly, or All Time
+- Category-specific rankings for different battle types
+- Minimum months played filter to ensure data quality
+- Click any player to navigate to their detailed stats
 
-### Code Splitting
+## Environment Variables
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The application requires several environment variables to connect to backend services:
 
-### Analyzing the Bundle Size
+| Variable | Description |
+|----------|-------------|
+| `REACT_APP_STATS_API_URL` | API endpoint for player statistics |
+| `REACT_APP_USER_GAME_API_URL` | API endpoint for user game data |
+| `REACT_APP_KIXEYE_AVATAR_API_URL` | API endpoint for player avatars |
+| `REACT_APP_GAME_ID` | Game identifier for API calls |
+| `REACT_APP_BACKEND_API_URL` | Backend API base URL |
+| `REACT_APP_API_SECRET` | API authentication secret |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+**Important**: Never commit the `.env` file to version control. Use `.env.example` as a template.
 
-### Making a Progressive Web App
+## Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Azure Static Web Apps
 
-### Advanced Configuration
+The project includes a GitHub Actions workflow for automatic deployment to Azure Static Web Apps:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- Workflow file: `.github/workflows/azure-static-web-apps-purple-plant-051730d03.yml`
+- Triggers on push to main branch and pull requests
+- Automatically builds and deploys the application
+- Requires `AZURE_STATIC_WEB_APPS_API_TOKEN` secret configured in GitHub
 
-### Deployment
+### Manual Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. Build the production bundle:
+```bash
+npm run build
+```
 
-### `npm run build` fails to minify
+2. Deploy the `build` folder to your hosting service of choice
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature-name`
+3. Commit your changes: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature/your-feature-name`
+5. Open a Pull Request
+
+## License
+
+This project is private and proprietary.
+
+## Acknowledgments
+
+- Built with [Create React App](https://create-react-app.dev/)
+- Charts powered by [QuickChart](https://quickchart.io/)
+- Icons from [React Icons](https://react-icons.github.io/react-icons/)
+
+## Support
+
+For issues, questions, or feature requests, please open an issue in the repository.
+
+---
+
+**Note**: This application requires valid API credentials and backend services to function properly. Ensure all environment variables are correctly configured before running the application.
