@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaTrophy, FaMedal, FaFilter, FaChartLine } from 'react-icons/fa';
+import { FaTrophy, FaMedal, FaFilter, FaChartLine, FaChevronDown, FaChevronUp, FaPlus, FaMinus } from 'react-icons/fa';
 import { fetchLeaderboard } from '../services/api';
 import '../styles/Leaderboard.css';
 
@@ -9,6 +9,7 @@ const Leaderboard = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [filtersExpanded, setFiltersExpanded] = useState(true);
   
   const [filters, setFilters] = useState({
     period: 2, // AllTime
@@ -16,7 +17,7 @@ const Leaderboard = () => {
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
     limit: 100,
-    minimumMonths: 2 // This if for minumum months played filter
+    minimumMonths: 2
   });
 
   const periodOptions = [
@@ -61,8 +62,21 @@ const Leaderboard = () => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
+  const incrementValue = (key, min = 1, max = Infinity) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: Math.min(prev[key] + 1, max)
+    }));
+  };
+
+  const decrementValue = (key, min = 1) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: Math.max(prev[key] - 1, min)
+    }));
+  };
+
   const handlePlayerClick = (playerId) => {
-    // Navigate to search page and trigger search via state
     navigate('/', { state: { searchPlayerId: playerId } });
   };
 
@@ -90,85 +104,193 @@ const Leaderboard = () => {
         </div>
 
         <div className="filters-section">
-          <div className="filters-header">
+          <div 
+            className="filters-header" 
+            onClick={() => setFiltersExpanded(!filtersExpanded)}
+            style={{ cursor: 'pointer', userSelect: 'none' }}
+          >
             <FaFilter />
             <h3>Filters</h3>
+            {filtersExpanded ? <FaChevronUp className="toggle-icon" /> : <FaChevronDown className="toggle-icon" />}
           </div>
 
-          <div className="filters-grid">
-            <div className="filter-group">
-              <label>Period</label>
-              <select
-                value={filters.period}
-                onChange={(e) => handleFilterChange('period', parseInt(e.target.value))}
-              >
-                {periodOptions.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="filter-group">
-              <label>Category</label>
-              <select
-                value={filters.category}
-                onChange={(e) => handleFilterChange('category', parseInt(e.target.value))}
-              >
-                {categoryOptions.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {filters.period === 0 && (
+          {filtersExpanded && (
+            <div className="filters-grid">
               <div className="filter-group">
-                <label>Month</label>
+                <label>Period</label>
                 <select
-                  value={filters.month}
-                  onChange={(e) => handleFilterChange('month', parseInt(e.target.value))}
+                  value={filters.period}
+                  onChange={(e) => handleFilterChange('period', parseInt(e.target.value))}
                 >
-                  {months.map((month, idx) => (
-                    <option key={idx} value={idx + 1}>{month}</option>
+                  {periodOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
               </div>
-            )}
 
-            {(filters.period === 0 || filters.period === 1) && (
               <div className="filter-group">
-                <label>Year</label>
+                <label>Category</label>
                 <select
-                  value={filters.year}
-                  onChange={(e) => handleFilterChange('year', parseInt(e.target.value))}
+                  value={filters.category}
+                  onChange={(e) => handleFilterChange('category', parseInt(e.target.value))}
                 >
-                  {years.map(year => (
-                    <option key={year} value={year}>{year}</option>
+                  {categoryOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
               </div>
-            )}
 
-            <div className="filter-group">
-              <label>Top Players</label>
-              <input
-                type="number"
-                min="1"
-                max="1000"
-                value={filters.limit}
-                onChange={(e) => handleFilterChange('limit', parseInt(e.target.value) || 100)}
-              />
-            </div>
+              {filters.period === 0 && (
+                <div className="filter-group">
+                  <label>Month</label>
+                  <select
+                    value={filters.month}
+                    onChange={(e) => handleFilterChange('month', parseInt(e.target.value))}
+                  >
+                    {months.map((month, idx) => (
+                      <option key={idx} value={idx + 1}>{month}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
-            <div className="filter-group">
-              <label>Min Months</label>
-              <input
-                type="number"
-                min="1"
-                value={filters.minimumMonths}
-                onChange={(e) => handleFilterChange('minimumMonths', parseInt(e.target.value) || 1)}
-              />
+              {(filters.period === 0 || filters.period === 1) && (
+                <div className="filter-group">
+                  <label>Year</label>
+                  <div className="number-input-wrapper">
+                    <button 
+                      className="decrement-btn"
+                      onClick={() => decrementValue('year', 2013)}
+                      disabled={filters.year <= 2013}
+                    >
+                      <FaMinus />
+                    </button>
+                    <input
+                      type="number"
+                      min="2013"
+                      max={currentYear}
+                      value={filters.year}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === '' || val === '-') {
+                          handleFilterChange('year', '');
+                          return;
+                        }
+                        const numVal = parseInt(val);
+                        if (!isNaN(numVal)) {
+                          handleFilterChange('year', numVal);
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const val = parseInt(e.target.value);
+                        if (isNaN(val) || val < 2013) {
+                          handleFilterChange('year', 2013);
+                        } else if (val > currentYear) {
+                          handleFilterChange('year', currentYear);
+                        }
+                      }}
+                      className="number-input"
+                    />
+                    <button 
+                      className="increment-btn"
+                      onClick={() => incrementValue('year', 2013, currentYear)}
+                      disabled={filters.year >= currentYear}
+                    >
+                      <FaPlus />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="filter-group">
+                <label>Top Players</label>
+                <div className="number-input-wrapper">
+                  <button 
+                    className="decrement-btn"
+                    onClick={() => decrementValue('limit', 1)}
+                    disabled={filters.limit <= 1}
+                  >
+                    <FaMinus />
+                  </button>
+                  <input
+                    type="number"
+                    min="1"
+                    max="1000"
+                    value={filters.limit}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '' || val === '-') {
+                        handleFilterChange('limit', '');
+                        return;
+                      }
+                      const numVal = parseInt(val);
+                      if (!isNaN(numVal)) {
+                        handleFilterChange('limit', numVal);
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const val = parseInt(e.target.value);
+                      if (isNaN(val) || val < 1) {
+                        handleFilterChange('limit', 1);
+                      } else if (val > 1000) {
+                        handleFilterChange('limit', 1000);
+                      }
+                    }}
+                    className="number-input"
+                  />
+                  <button 
+                    className="increment-btn"
+                    onClick={() => incrementValue('limit', 1, 1000)}
+                    disabled={filters.limit >= 1000}
+                  >
+                    <FaPlus />
+                  </button>
+                </div>
+              </div>
+
+              <div className="filter-group">
+                <label>Min Months</label>
+                <div className="number-input-wrapper">
+                  <button 
+                    className="decrement-btn"
+                    onClick={() => decrementValue('minimumMonths', 1)}
+                    disabled={filters.minimumMonths <= 1}
+                  >
+                    <FaMinus />
+                  </button>
+                  <input
+                    type="number"
+                    min="1"
+                    value={filters.minimumMonths}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '' || val === '-') {
+                        handleFilterChange('minimumMonths', '');
+                        return;
+                      }
+                      const numVal = parseInt(val);
+                      if (!isNaN(numVal)) {
+                        handleFilterChange('minimumMonths', numVal);
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const val = parseInt(e.target.value);
+                      if (isNaN(val) || val < 1) {
+                        handleFilterChange('minimumMonths', 1);
+                      }
+                    }}
+                    className="number-input"
+                  />
+                  <button 
+                    className="increment-btn"
+                    onClick={() => incrementValue('minimumMonths', 1)}
+                  >
+                    <FaPlus />
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {loading && (

@@ -115,7 +115,6 @@ h2 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 1.5rem;
   text-align: left;
 }
 
@@ -258,6 +257,10 @@ h2 {
   .combat-stats {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
+
+  .player-name {
+      text-align: left;
+  }
 }
 
 /* Mobile Responsive */
@@ -282,7 +285,7 @@ h2 {
 
   .player-name {
     font-size: 1.75rem;
-    text-align: center;
+    text-align: left;
   }
 
   .player-avatar {
