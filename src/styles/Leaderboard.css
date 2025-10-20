@@ -162,6 +162,8 @@
 
 .number-input[type=number] {
   -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  appearance: textfield;
 }
 
 .increment-btn,
