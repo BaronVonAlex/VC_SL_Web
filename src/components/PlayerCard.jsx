@@ -1,8 +1,11 @@
-import React from 'react';
+import { FaStar, FaRegStar } from 'react-icons/fa';
+import { useFavorites } from '../../src/components/FavoriteContext.jsx';
 import CombatStats from './CombatStats';
 import HistoricalData from './HistoricalData';
 
 const PlayerCard = ({ playerData, historicalStats, usernameHistory, onYearChange, currentYear }) => {
+  const { isFavorite, toggleFavorite } = useFavorites();
+
   if (!playerData) return null;
 
   const formatTimeSince = (dateString) => {
@@ -27,12 +30,23 @@ const PlayerCard = ({ playerData, historicalStats, usernameHistory, onYearChange
     console.error('Error parsing usernameHistory:', error);
   }
 
+  const isFav = isFavorite(playerData.playerId);
+
   return (
     <div className="player-card">
       <div className="player-card-content">
         <div className="sidebar">
           <div className="sidebar-section">
-            <h2 className="player-name">{playerData.alias}</h2>
+            <div className="player-header-with-star">
+              <h2 className="player-name">{playerData.alias}</h2>
+              <button
+                onClick={() => toggleFavorite(playerData.playerId, playerData.alias)}
+                className="favorite-star-btn"
+                aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
+              >
+                {isFav ? <FaStar className="star-filled" /> : <FaRegStar className="star-empty" />}
+              </button>
+            </div>
             <h3 className="sidebar-title">Player Details</h3>
             <img src={playerData.avatarUrl} alt={`${playerData.alias}'s Avatar`} className="player-avatar" />
             

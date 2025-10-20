@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import SearchPage from './components/SearchPage';
 import Leaderboard from './components/Leaderboard';
 import PlayerComparison from './components/PlayerComparison';
+import Favorites from './components/Favorites';
+import { FavoritesProvider } from './components/FavoriteContext.jsx';
 import './App.css';
 
 const Navigation = () => {
@@ -23,6 +25,9 @@ const Navigation = () => {
         <Link to="/comparison" className={`nav-link ${isActive('/comparison')}`}>
           Compare Players
         </Link>
+        <Link to="/favorites" className={`nav-link ${isActive('/favorites')}`}>
+          Favorites
+        </Link>
       </div>
     </nav>
   );
@@ -30,17 +35,20 @@ const Navigation = () => {
 
 const App = () => {
   return (
-    <Router>
-      <div className="App">
-        <Navigation />
-        
-        <Routes>
-          <Route path="/" element={<SearchPage />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/comparison" element={<PlayerComparison />} />
-        </Routes>
-      </div>
-    </Router>
+    <FavoritesProvider>
+      <Router>
+        <div className="App">
+          <Navigation />
+          
+          <Routes>
+            <Route path="/" element={<SearchPage />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/comparison" element={<PlayerComparison />} />
+            <Route path="/favorites" element={<Favorites />} />
+          </Routes>
+        </div>
+      </Router>
+    </FavoritesProvider>
   );
 };
 

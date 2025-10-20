@@ -409,3 +409,68 @@ h2 {
     font-size: 0.9rem;
   }
 }
+
+.player-header-with-star {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.player-header-with-star .player-name {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.favorite-star-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+
+.favorite-star-btn:hover {
+  background: rgba(251, 191, 36, 0.1);
+  transform: scale(1.1);
+}
+
+.favorite-star-btn:active {
+  transform: scale(0.95);
+}
+
+.star-filled {
+  color: #fbbf24;
+  font-size: 1.8rem;
+  filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.5));
+}
+
+.star-empty {
+  color: #71717a;
+  font-size: 1.8rem;
+  transition: color 0.3s ease;
+}
+
+.favorite-star-btn:hover .star-empty {
+  color: #fbbf24;
+}
+
+@media (max-width: 768px) {
+  .star-filled,
+  .star-empty {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .star-filled,
+  .star-empty {
+    font-size: 1.3rem;
+  }
+}
