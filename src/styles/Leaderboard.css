@@ -274,7 +274,7 @@
   font-weight: 600;
   color: #a5a6ab;
   font-size: 0.9rem;
-  gap: 1rem; /* Add gap to match row gap */
+  gap: 1rem;
   align-items: center;
 }
 
@@ -286,7 +286,6 @@
   display: grid;
   grid-template-columns: 80px 1fr 150px 120px !important;
   align-items: center;
-  width: 100%;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid #3a3b3e;
   gap: 1rem;
@@ -339,7 +338,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   overflow: hidden;
-  text-overflow: ellipsis;
+
   white-space: nowrap;
   text-align: left;
 }
@@ -348,14 +347,17 @@
   text-align: center;
   display: flex;
   justify-content: center;
-  padding-right: 6rem;
+  min-width: 150px;
 }
 
 .months-cell {
   text-align: center;
   color: #a5a6ab;
   font-size: 1rem;
-  padding-right: 5rem;
+  min-width: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .winrate-badge {
