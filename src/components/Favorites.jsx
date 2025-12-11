@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { FaStar, FaTrash, FaSearch } from 'react-icons/fa';
-import { useFavorites } from '../../src/components/FavoriteContext.jsx';
+import { useFavorites } from './FavoriteContext';
 import '../styles/Favorites.css';
 
 const Favorites = () => {
@@ -17,19 +17,20 @@ const Favorites = () => {
   };
 
   const sortedFavorites = [...favorites].sort((a, b) => b.addedAt - a.addedAt);
+  const isEmpty = favorites.length === 0;
 
   return (
     <div className="favorites-container">
       <div className="favorites-card">
-        <div className="favorites-header">
+        <header className="favorites-header">
           <div className="header-title">
             <FaStar className="header-icon" />
             <h1>Favorite Players</h1>
           </div>
           <p className="subtitle">Your saved players for quick access</p>
-        </div>
+        </header>
 
-        {favorites.length === 0 ? (
+        {isEmpty ? (
           <div className="empty-state">
             <FaStar className="empty-icon" />
             <h3>No Favorites Yet</h3>
@@ -37,36 +38,45 @@ const Favorites = () => {
           </div>
         ) : (
           <div className="favorites-grid">
-            {sortedFavorites.map((fav) => (
-              <div
-                key={fav.id}
+            {sortedFavorites.map(({ id, name }) => (
+              <article
+                key={id}
                 className="favorite-card"
-                onClick={() => handlePlayerClick(fav.id)}
+                onClick={() => handlePlayerClick(id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') handlePlayerClick(id);
+                }}
               >
                 <div className="favorite-info">
-                  <FaStar className="star-icon" />
+                  <FaStar className="star-icon" aria-hidden="true" />
                   <div className="favorite-details">
-                    <div className="favorite-name">{fav.name}</div>
-                    <div className="favorite-id">ID: {fav.id}</div>
+                    <div className="favorite-name">{name}</div>
+                    <div className="favorite-id">ID: {id}</div>
                   </div>
                 </div>
+
                 <div className="favorite-actions">
                   <button
-                    onClick={(e) => handleRemove(e, fav.id)}
+                    onClick={(e) => handleRemove(e, id)}
                     className="remove-btn"
-                    aria-label="Remove favorite"
+                    aria-label={`Remove ${name} from favorites`}
                   >
-                    <FaTrash />
+                    <FaTrash aria-hidden="true" />
                   </button>
                   <button
-                    onClick={() => handlePlayerClick(fav.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePlayerClick(id);
+                    }}
                     className="view-btn"
-                    aria-label="View player"
+                    aria-label={`View ${name} player details`}
                   >
-                    <FaSearch />
+                    <FaSearch aria-hidden="true" />
                   </button>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         )}
