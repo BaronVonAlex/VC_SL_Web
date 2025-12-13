@@ -4,13 +4,10 @@
   "description": "Azure Functions for VC_SL API",
   "main": "index.js",
   "scripts": {
-    "start": "func start",
-    "build": "tsc"
+    "start": "func start"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "azure-functions-core-tools": "^4.0.0"
-  }
+  "dependencies": {}
 }
