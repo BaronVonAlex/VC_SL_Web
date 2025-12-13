@@ -1,16 +1,17 @@
 import axios from 'axios';
+import HmacClient from './HmacClient';
 import { calculateBattleStats } from '../utils/statsUtil';
 
 const USER_GAME_API_URL = process.env.REACT_APP_USER_GAME_API_URL;
 const STATS_API_URL = process.env.REACT_APP_STATS_API_URL;
 const KIXEYE_AVATAR_API_URL = process.env.REACT_APP_KIXEYE_AVATAR_API_URL;
 const GAME_ID = process.env.REACT_APP_GAME_ID;
-
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
-const API_SECRET = process.env.REACT_APP_API_SECRET;
+const HMAC_SECRET = process.env.REACT_APP_HMAC_SECRET;
+const hmacClient = HMAC_SECRET ? new HmacClient(HMAC_SECRET, BACKEND_API_URL) : null;
 
 const getHeaders = () => ({
-  'X-API-Key': API_SECRET,
+  'X-API-Key': process.env.REACT_APP_API_SECRET || '',
   'Content-Type': 'application/json'
 });
 
@@ -50,45 +51,62 @@ export const fetchUserAvatar = async (userId) => {
 
 export const createOrGetUser = async (playerID, currentUsername) => {
   try {
-    const getResponse = await axios.get(
-      `${BACKEND_API_URL}/api/Users/GetUser/${playerID}`,
-      { headers: getHeaders() }
-    );
+    let getResponse;
+    if (hmacClient) {
+      getResponse = await hmacClient.get(`/api/Users/GetUser/${playerID}`);
+    } else {
+      const response = await axios.get(
+        `${BACKEND_API_URL}/api/Users/GetUser/${playerID}`,
+        { headers: getHeaders() }
+      );
+      getResponse = response.data;
+    }
 
-    const existingHistory = getResponse.data.usernameHistory || [];
+    const existingHistory = getResponse.usernameHistory || [];
 
     if (!existingHistory.includes(currentUsername)) {
       await updateUsernameHistory(playerID, currentUsername);
 
-      const updatedResponse = await axios.get(
-        `${BACKEND_API_URL}/api/Users/GetUser/${playerID}`,
-        { headers: getHeaders() }
-      );
-      return updatedResponse.data;
+      let updatedResponse;
+      if (hmacClient) {
+        updatedResponse = await hmacClient.get(`/api/Users/GetUser/${playerID}`);
+      } else {
+        const response = await axios.get(
+          `${BACKEND_API_URL}/api/Users/GetUser/${playerID}`,
+          { headers: getHeaders() }
+        );
+        updatedResponse = response.data;
+      }
+      return updatedResponse;
     }
 
-    return getResponse.data;
+    return getResponse;
   } catch (error) {
     if (error.response && error.response.status === 404) {
       console.log(`User ${playerID} not found in database. Creating new user...`);
       try {
-        // According to Swagger: CreateUserDto.usernameHistory is a STRING, not an array
-        const createResponse = await axios.post(
-          `${BACKEND_API_URL}/api/Users/CreateUser`,
-          {
+        let createResponse;
+        if (hmacClient) {
+          createResponse = await hmacClient.post(`/api/Users/CreateUser`, {
             id: parseInt(playerID),
-            usernameHistory: currentUsername // ✅ string, matches CreateUserDto
-          },
-          { headers: getHeaders() }
-        );
+            usernameHistory: currentUsername
+          });
+        } else {
+          const response = await axios.post(
+            `${BACKEND_API_URL}/api/Users/CreateUser`,
+            {
+              id: parseInt(playerID),
+              usernameHistory: currentUsername
+            },
+            { headers: getHeaders() }
+          );
+          createResponse = response.data;
+        }
 
-        console.log(`Successfully created user ${playerID} with username: ${currentUsername}`);
-        return createResponse.data;
+        console.log(`Successfully created user ${playerID}`);
+        return createResponse;
       } catch (createError) {
         console.error('Error creating user:', createError);
-        console.error('Create error response:', createError.response?.data);
-
-        // fallback response (simulate what backend would return)
         return {
           id: parseInt(playerID),
           usernameHistory: [currentUsername],
@@ -99,8 +117,6 @@ export const createOrGetUser = async (playerID, currentUsername) => {
     }
 
     console.error('Error fetching user:', error);
-    console.error('Error response:', error.response?.data);
-
     return {
       id: parseInt(playerID),
       usernameHistory: [currentUsername],
@@ -112,15 +128,20 @@ export const createOrGetUser = async (playerID, currentUsername) => {
 
 export const updateUsernameHistory = async (playerID, newUsername) => {
   try {
-    // According to Swagger: UpdateUserDto.usernameHistory is a string (not array)
-    const response = await axios.put(
-      `${BACKEND_API_URL}/api/Users/UpdateUser/${playerID}`,
-      {
-        usernameHistory: newUsername // ✅ string, matches UpdateUserDto
-      },
-      { headers: getHeaders() }
-    );
-    return response.data;
+    if (hmacClient) {
+      return await hmacClient.put(`/api/Users/UpdateUser/${playerID}`, {
+        usernameHistory: newUsername
+      });
+    } else {
+      const response = await axios.put(
+        `${BACKEND_API_URL}/api/Users/UpdateUser/${playerID}`,
+        {
+          usernameHistory: newUsername
+        },
+        { headers: getHeaders() }
+      );
+      return response.data;
+    }
   } catch (error) {
     console.error('Error updating username history:', error);
     throw error;
@@ -129,14 +150,22 @@ export const updateUsernameHistory = async (playerID, newUsername) => {
 
 export const getWinrateForUser = async (userId, year) => {
   try {
-    const response = await axios.get(
-      `${BACKEND_API_URL}/api/Winrate/GetWinrateForUser`,
-      {
-        params: { userId, year },
-        headers: getHeaders()
-      }
-    );
-    return Array.isArray(response.data) ? response.data : [];
+    let response;
+    if (hmacClient) {
+      response = await hmacClient.get(
+        `/api/Winrate/GetWinrateForUser?userId=${userId}&year=${year}`
+      );
+    } else {
+      const axiosResponse = await axios.get(
+        `${BACKEND_API_URL}/api/Winrate/GetWinrateForUser`,
+        {
+          params: { userId, year },
+          headers: getHeaders()
+        }
+      );
+      response = axiosResponse.data;
+    }
+    return Array.isArray(response) ? response : [];
   } catch (error) {
     if (error.response && error.response.status === 404) {
       console.log(`No winrate data found for user ${userId}, year ${year}`);
@@ -160,15 +189,18 @@ export const updateWinrateStats = async (userId, month, year, winrateData) => {
 
     console.log('Sending winrate data to backend:', sanitizedData);
 
-    const response = await axios.post(
-      `${BACKEND_API_URL}/api/Winrate/UpdateWinrate`,
-      sanitizedData,
-      { headers: getHeaders() }
-    );
-    return response.data;
+    if (hmacClient) {
+      return await hmacClient.post(`/api/Winrate/UpdateWinrate`, sanitizedData);
+    } else {
+      const response = await axios.post(
+        `${BACKEND_API_URL}/api/Winrate/UpdateWinrate`,
+        sanitizedData,
+        { headers: getHeaders() }
+      );
+      return response.data;
+    }
   } catch (error) {
     console.error('Error updating winrate stats:', error);
-    console.error('Winrate error response:', error.response?.data);
     return null;
   }
 };
@@ -191,24 +223,27 @@ export const fetchLeaderboard = async (filters) => {
 
     console.log('Fetching leaderboard with params:', params);
 
-    const response = await axios.get(
-      `${BACKEND_API_URL}/api/Leaderboard`,
-      { 
-        params,
-        headers: getHeaders() 
-      }
-    );
-
-    return response.data;
+    if (hmacClient) {
+      const queryString = new URLSearchParams(params).toString();
+      return await hmacClient.get(`/api/Leaderboard?${queryString}`);
+    } else {
+      const response = await axios.get(
+        `${BACKEND_API_URL}/api/Leaderboard`,
+        { 
+          params,
+          headers: getHeaders() 
+        }
+      );
+      return response.data;
+    }
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
-    if (error.response && error.response.status === 400) {
+    if (error.message && error.message.includes('400')) {
       throw new Error('Invalid filter parameters');
     }
     throw error;
   }
 };
-
 
 export const fetchPlayerDetails = async (playerID, year) => {
   try {
@@ -285,7 +320,6 @@ export const fetchPlayerDetails = async (playerID, year) => {
     };
   } catch (error) {
     console.error('Error in fetchPlayerDetails:', error);
-    console.error('Error details:', error.response?.data || error.message);
-    throw new Error(`Failed to fetch player details: ${error.response?.data?.title || error.message}`);
+    throw new Error(`Failed to fetch player details: ${error.message}`);
   }
 };
