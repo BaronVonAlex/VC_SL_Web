@@ -7,7 +7,7 @@ import Favorites from './components/Favorites';
 import { FavoritesProvider } from './components/FavoriteContext.jsx';
 import { FaSearch, FaTrophy, FaExchangeAlt, FaStar } from 'react-icons/fa';
 import './App.css';
-
+//HELP
 const Navigation = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
