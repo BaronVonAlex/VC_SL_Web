@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import SearchPage from './components/SearchPage';
-import Leaderboard from './components/Leaderboard';
-import PlayerComparison from './components/PlayerComparison';
-import Favorites from './components/Favorites';
-import { FavoritesProvider } from './components/FavoriteContext.jsx';
+import SearchPage from '../src/components/SearchPage.jsx';
+import Leaderboard from '../src/components/Leaderboard.jsx';
+import PlayerComparison from '../src/components/PlayerComparison.jsx';
+import Favorites from '../src/components/Favorites.jsx';
+import { FavoritesProvider } from '../src/components/FavoriteContext.jsx';
 import { FaSearch, FaTrophy, FaExchangeAlt, FaStar } from 'react-icons/fa';
 import './App.css';
 
