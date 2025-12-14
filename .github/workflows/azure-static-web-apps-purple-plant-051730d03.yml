@@ -39,6 +39,7 @@ jobs:
           REACT_APP_GAME_ID: ${{ secrets.REACT_APP_GAME_ID }}
           REACT_APP_BACKEND_API_URL: ${{ secrets.REACT_APP_BACKEND_API_URL }}
           REACT_APP_API_SECRET: ${{ secrets.REACT_APP_API_SECRET }}
+          REACT_APP_HMAC_SECRET: ${{ secrets.REACT_APP_HMAC_SECRET }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
