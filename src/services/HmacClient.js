@@ -1,13 +1,15 @@
 class HmacClient {
   constructor(secretKey, apiBaseUrl) {
-    this.secretKey = secretKey;
+    this.#secretKey = secretKey;
     this.apiBaseUrl = apiBaseUrl;
   }
+
+  #secretKey;
 
   async generateSignature(payload) {
     try {
       const encoder = new TextEncoder();
-      const keyData = encoder.encode(this.secretKey);
+      const keyData = encoder.encode(this.#secretKey);
       const payloadData = encoder.encode(payload);
       
       const key = await crypto.subtle.importKey(
@@ -21,15 +23,9 @@ class HmacClient {
       const signature = await crypto.subtle.sign('HMAC', key, payloadData);
       const base64Sig = this.arrayBufferToBase64(signature);
       
-      console.log('[HMAC Debug]', {
-        payload: payload,
-        secretKey: this.secretKey ? '***hidden***' : 'MISSING',
-        signature: base64Sig
-      });
-      
       return base64Sig;
     } catch (error) {
-      console.error('[HMAC Error]', error);
+      console.error('[HMAC Error] Signature generation failed');
       throw error;
     }
   }
@@ -62,12 +58,14 @@ class HmacClient {
       headers['X-HMAC-Signature'] = signature;
     }
     
-    console.log('[Request]', {
-      url,
-      method,
-      hasSignature: !!signature,
-      headers
-    });
+    // ✅ Only log safe info - no headers, no secrets
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Request]', {
+        endpoint,
+        method,
+        hasSignature: !!signature,
+      });
+    }
     
     const response = await fetch(url, {
       method,
