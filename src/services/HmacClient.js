@@ -5,20 +5,33 @@ class HmacClient {
   }
 
   async generateSignature(payload) {
-    const encoder = new TextEncoder();
-    const keyData = encoder.encode(this.secretKey);
-    const payloadData = encoder.encode(payload);
-
-    const key = await crypto.subtle.importKey(
-      'raw',
-      keyData,
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign']
-    );
-
-    const signature = await crypto.subtle.sign('HMAC', key, payloadData);
-    return this.arrayBufferToBase64(signature);
+    try {
+      const encoder = new TextEncoder();
+      const keyData = encoder.encode(this.secretKey);
+      const payloadData = encoder.encode(payload);
+      
+      const key = await crypto.subtle.importKey(
+        'raw',
+        keyData,
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+      
+      const signature = await crypto.subtle.sign('HMAC', key, payloadData);
+      const base64Sig = this.arrayBufferToBase64(signature);
+      
+      console.log('[HMAC Debug]', {
+        payload: payload,
+        secretKey: this.secretKey ? '***hidden***' : 'MISSING',
+        signature: base64Sig
+      });
+      
+      return base64Sig;
+    } catch (error) {
+      console.error('[HMAC Error]', error);
+      throw error;
+    }
   }
 
   arrayBufferToBase64(buffer) {
@@ -30,24 +43,43 @@ class HmacClient {
 
   async request(endpoint, config = {}) {
     const url = `${this.apiBaseUrl}${endpoint}`;
-    const body = config.body ? JSON.stringify(config.body) : undefined;
-    const signature = body ? await this.generateSignature(body) : '';
+    const method = config.method || 'GET';
 
-    const response = await fetch(url, {
-      method: config.method || 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-HMAC-Signature': signature,
-        ...(config.headers || {}),
-      },
-      body,
+    let body = undefined;
+    let signature = '';
+    
+    if (method !== 'GET' && config.body) {
+      body = JSON.stringify(config.body);
+      signature = await this.generateSignature(body);
+    }
+    
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(config.headers || {}),
+    };
+    
+    if (signature) {
+      headers['X-HMAC-Signature'] = signature;
+    }
+    
+    console.log('[Request]', {
+      url,
+      method,
+      hasSignature: !!signature,
+      headers
     });
-
+    
+    const response = await fetch(url, {
+      method,
+      headers,
+      ...(body && { body }),
+    });
+    
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: 'Unknown error' }));
       throw new Error(error.error || `HTTP ${response.status}`);
     }
-
+    
     return response.json();
   }
 
