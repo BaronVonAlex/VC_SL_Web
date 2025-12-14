@@ -8,10 +8,16 @@ const KIXEYE_AVATAR_API_URL = process.env.REACT_APP_KIXEYE_AVATAR_API_URL;
 const GAME_ID = process.env.REACT_APP_GAME_ID;
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 const HMAC_SECRET = process.env.REACT_APP_HMAC_SECRET;
+const API_KEY = process.env.REACT_APP_API_SECRET;
+
 const hmacClient = HMAC_SECRET ? new HmacClient(HMAC_SECRET, BACKEND_API_URL) : null;
 
+if (!hmacClient) {
+  console.warn('[WARNING] HmacClient not initialized. Check REACT_APP_HMAC_SECRET environment variable.');
+}
+
 const getHeaders = () => ({
-  'X-API-Key': process.env.REACT_APP_API_SECRET || '',
+  'X-API-Key': API_KEY || '',
   'Content-Type': 'application/json'
 });
 
@@ -187,8 +193,6 @@ export const updateWinrateStats = async (userId, month, year, winrateData) => {
       fleetWinrate: winrateData.fleetWinrate ?? 0
     };
 
-    console.log('Sending winrate data to backend:', sanitizedData);
-
     if (hmacClient) {
       return await hmacClient.post(`/api/Winrate/UpdateWinrate`, sanitizedData);
     } else {
@@ -220,8 +224,6 @@ export const fetchLeaderboard = async (filters) => {
     } else if (filters.period === 1) {
       params.year = filters.year;
     }
-
-    console.log('Fetching leaderboard with params:', params);
 
     if (hmacClient) {
       const queryString = new URLSearchParams(params).toString();
