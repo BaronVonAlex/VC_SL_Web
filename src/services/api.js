@@ -8,17 +8,20 @@ const KIXEYE_AVATAR_API_URL = process.env.REACT_APP_KIXEYE_AVATAR_API_URL;
 const GAME_ID = process.env.REACT_APP_GAME_ID;
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 const HMAC_SECRET = process.env.REACT_APP_HMAC_SECRET;
-const API_KEY = process.env.REACT_APP_API_SECRET;
 
-const hmacClient = HMAC_SECRET ? new HmacClient(HMAC_SECRET, BACKEND_API_URL) : null;
-
-if (!hmacClient) {
-  console.warn('[WARNING] HmacClient not initialized. Check REACT_APP_HMAC_SECRET environment variable.');
+if (!HMAC_SECRET) {
+  console.error('[ERROR] REACT_APP_HMAC_SECRET is not set! Set this environment variable.');
 }
 
-const getHeaders = () => ({
-  'X-API-Key': API_KEY || '',
-  'Content-Type': 'application/json'
+if (!BACKEND_API_URL) {
+  console.error('[ERROR] REACT_APP_BACKEND_API_URL is not set! Set this environment variable.');
+}
+
+const hmacClient = new HmacClient(HMAC_SECRET || '', BACKEND_API_URL || '');
+
+console.log('[API Client Initialized]', {
+  BACKEND_API_URL,
+  HMAC_SECRET: HMAC_SECRET ? '***hidden***' : 'NOT SET',
 });
 
 export const fetchUserId = async (playerID) => {
@@ -57,57 +60,25 @@ export const fetchUserAvatar = async (userId) => {
 
 export const createOrGetUser = async (playerID, currentUsername) => {
   try {
-    let getResponse;
-    if (hmacClient) {
-      getResponse = await hmacClient.get(`/api/Users/GetUser/${playerID}`);
-    } else {
-      const response = await axios.get(
-        `${BACKEND_API_URL}/api/Users/GetUser/${playerID}`,
-        { headers: getHeaders() }
-      );
-      getResponse = response.data;
-    }
+    const getResponse = await hmacClient.get(`/api/Users/GetUser/${playerID}`);
 
     const existingHistory = getResponse.usernameHistory || [];
 
     if (!existingHistory.includes(currentUsername)) {
       await updateUsernameHistory(playerID, currentUsername);
-
-      let updatedResponse;
-      if (hmacClient) {
-        updatedResponse = await hmacClient.get(`/api/Users/GetUser/${playerID}`);
-      } else {
-        const response = await axios.get(
-          `${BACKEND_API_URL}/api/Users/GetUser/${playerID}`,
-          { headers: getHeaders() }
-        );
-        updatedResponse = response.data;
-      }
+      const updatedResponse = await hmacClient.get(`/api/Users/GetUser/${playerID}`);
       return updatedResponse;
     }
 
     return getResponse;
   } catch (error) {
-    if (error.response && error.response.status === 404) {
+    if (error.message && error.message.includes('404')) {
       console.log(`User ${playerID} not found in database. Creating new user...`);
       try {
-        let createResponse;
-        if (hmacClient) {
-          createResponse = await hmacClient.post(`/api/Users/CreateUser`, {
-            id: parseInt(playerID),
-            usernameHistory: currentUsername
-          });
-        } else {
-          const response = await axios.post(
-            `${BACKEND_API_URL}/api/Users/CreateUser`,
-            {
-              id: parseInt(playerID),
-              usernameHistory: currentUsername
-            },
-            { headers: getHeaders() }
-          );
-          createResponse = response.data;
-        }
+        const createResponse = await hmacClient.post(`/api/Users/CreateUser`, {
+          id: parseInt(playerID),
+          usernameHistory: currentUsername
+        });
 
         console.log(`Successfully created user ${playerID}`);
         return createResponse;
@@ -134,20 +105,9 @@ export const createOrGetUser = async (playerID, currentUsername) => {
 
 export const updateUsernameHistory = async (playerID, newUsername) => {
   try {
-    if (hmacClient) {
-      return await hmacClient.put(`/api/Users/UpdateUser/${playerID}`, {
-        usernameHistory: newUsername
-      });
-    } else {
-      const response = await axios.put(
-        `${BACKEND_API_URL}/api/Users/UpdateUser/${playerID}`,
-        {
-          usernameHistory: newUsername
-        },
-        { headers: getHeaders() }
-      );
-      return response.data;
-    }
+    return await hmacClient.put(`/api/Users/UpdateUser/${playerID}`, {
+      usernameHistory: newUsername
+    });
   } catch (error) {
     console.error('Error updating username history:', error);
     throw error;
@@ -156,24 +116,12 @@ export const updateUsernameHistory = async (playerID, newUsername) => {
 
 export const getWinrateForUser = async (userId, year) => {
   try {
-    let response;
-    if (hmacClient) {
-      response = await hmacClient.get(
-        `/api/Winrate/GetWinrateForUser?userId=${userId}&year=${year}`
-      );
-    } else {
-      const axiosResponse = await axios.get(
-        `${BACKEND_API_URL}/api/Winrate/GetWinrateForUser`,
-        {
-          params: { userId, year },
-          headers: getHeaders()
-        }
-      );
-      response = axiosResponse.data;
-    }
+    const response = await hmacClient.get(
+      `/api/Winrate/GetWinrateForUser?userId=${userId}&year=${year}`
+    );
     return Array.isArray(response) ? response : [];
   } catch (error) {
-    if (error.response && error.response.status === 404) {
+    if (error.message && error.message.includes('404')) {
       console.log(`No winrate data found for user ${userId}, year ${year}`);
       return [];
     }
@@ -193,16 +141,9 @@ export const updateWinrateStats = async (userId, month, year, winrateData) => {
       fleetWinrate: winrateData.fleetWinrate ?? 0
     };
 
-    if (hmacClient) {
-      return await hmacClient.post(`/api/Winrate/UpdateWinrate`, sanitizedData);
-    } else {
-      const response = await axios.post(
-        `${BACKEND_API_URL}/api/Winrate/UpdateWinrate`,
-        sanitizedData,
-        { headers: getHeaders() }
-      );
-      return response.data;
-    }
+    console.log('[updateWinrateStats]', sanitizedData);
+
+    return await hmacClient.post(`/api/Winrate/UpdateWinrate`, sanitizedData);
   } catch (error) {
     console.error('Error updating winrate stats:', error);
     return null;
@@ -225,19 +166,10 @@ export const fetchLeaderboard = async (filters) => {
       params.year = filters.year;
     }
 
-    if (hmacClient) {
-      const queryString = new URLSearchParams(params).toString();
-      return await hmacClient.get(`/api/Leaderboard?${queryString}`);
-    } else {
-      const response = await axios.get(
-        `${BACKEND_API_URL}/api/Leaderboard`,
-        { 
-          params,
-          headers: getHeaders() 
-        }
-      );
-      return response.data;
-    }
+    console.log('[fetchLeaderboard]', params);
+
+    const queryString = new URLSearchParams(params).toString();
+    return await hmacClient.get(`/api/Leaderboard?${queryString}`);
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
     if (error.message && error.message.includes('400')) {
