@@ -15,8 +15,10 @@ A React-based web application for searching and displaying Vega Conflict player 
   - Period selection (Monthly, Yearly, All Time)
   - Category filters (Combined, Base Attack, Base Defence, Fleet)
   - Minimum months played filter
+- **Player Comparison**: Compare up to 4 players side-by-side
+- **Favorites**: Save players for quick access (persisted in localStorage)
 - **Username History**: Track player name changes over time
-- **Responsive Design**: Fully responsive interface optimized for desktop, tablet, and mobile devices
+- **Responsive Design**: Fully responsive interface optimized for desktop, tablet, and mobile
 
 ## Tech Stack
 
@@ -26,12 +28,13 @@ A React-based web application for searching and displaying Vega Conflict player 
 - **Styling**: Custom CSS with gradient themes
 - **Icons**: React Icons 5.5.0
 - **Charts**: QuickChart API for historical data visualization
-- **Build Tool**: Create React App
+- **Build Tool**: Vite 6
+- **Auth**: HMAC-SHA256 request signing for backend API calls
 
 ## Prerequisites
 
-- Node.js (v14 or higher recommended)
-- npm or yarn package manager
+- Node.js (v18 or higher recommended)
+- npm
 - Access to the required API endpoints (configured via environment variables)
 
 ## Installation
@@ -49,27 +52,24 @@ npm install
 
 3. Create a `.env` file in the root directory with the following variables:
 ```env
-REACT_APP_STATS_API_URL=<your-stats-api-url>
-REACT_APP_USER_GAME_API_URL=<your-user-game-api-url>
-REACT_APP_KIXEYE_AVATAR_API_URL=<your-avatar-api-url>
-REACT_APP_GAME_ID=<your-game-id>
-REACT_APP_BACKEND_API_URL=<your-backend-api-url>
-REACT_APP_API_SECRET=<your-api-secret>
+VITE_STATS_API_URL=<your-stats-api-url>
+VITE_USER_GAME_API_URL=<your-user-game-api-url>
+VITE_KIXEYE_AVATAR_API_URL=<your-avatar-api-url>
+VITE_GAME_ID=<your-game-id>
+VITE_BACKEND_API_URL=<your-backend-api-url>
+VITE_HMAC_SECRET=<your-hmac-secret>
 ```
 
 ## Available Scripts
 
-### `npm start`
-Runs the app in development mode at [http://localhost:3000](http://localhost:3000)
+### `npm run dev`
+Runs the app in development mode at [http://localhost:5173](http://localhost:5173)
 
 ### `npm run build`
-Builds the app for production to the `build` folder with optimized performance
+Builds the app for production to the `dist` folder
 
-### `npm test`
-Launches the test runner in interactive watch mode
-
-### `npm run eject`
-**Note**: This is a one-way operation. Ejects from Create React App for full configuration control
+### `npm run preview`
+Serves the production build locally for testing
 
 ## Project Structure
 
@@ -81,71 +81,62 @@ src/
 │   ├── SearchBar.jsx    # Search input component
 │   ├── CombatStats.jsx  # Battle statistics display
 │   ├── Chart.jsx        # Historical data chart
+│   ├── HistoricalData.jsx # Historical stats wrapper
 │   ├── Leaderboard.jsx  # Leaderboard component
-│   └── HistoricalData.jsx # Historical stats wrapper
+│   ├── PlayerComparison.jsx # Side-by-side player comparison
+│   ├── Favorites.jsx    # Saved players page
+│   └── FavoriteContext.jsx  # Favorites state (React Context)
 ├── services/            # API service layer
-│   └── api.js          # API calls and data fetching
-├── styles/             # Component-specific styles
+│   ├── api.js           # API calls and data fetching
+│   └── HmacClient.js    # HMAC-SHA256 request signing
+├── styles/              # Component-specific styles
 │   ├── SearchBar.css
-│   └── Leaderboard.css
-├── utils/              # Utility functions
-│   ├── statsUtil.js    # Stats calculations
-│   └── chartUtil.js    # Chart generation
-├── App.js              # Main app component with routing
-├── App.css             # Global styles
-└── index.js            # Application entry point
+│   ├── Leaderboard.css
+│   ├── PlayerComparison.css
+│   └── Favorites.css
+├── utils/               # Utility functions
+│   ├── statsUtil.js     # Stats calculations
+│   └── chartUtil.js     # Chart URL generation
+├── App.jsx              # Main app component with routing
+├── App.css              # Global styles
+└── main.jsx             # Application entry point
 ```
-
-## Key Features Explained
-
-### Player Search
-- Enter a Player ID to fetch comprehensive player statistics
-- View real-time data including level, medals, and planet information
-- Track player activity with "Last Seen" timestamps
-
-### Combat Statistics
-- **Fleet vs Fleet**: Space combat performance metrics
-- **Base Attack**: Offensive base raid statistics
-- **Base Defence**: Defensive performance against raids
-- Each category shows wins, draws, losses, winrate percentage, and K/D ratio
-
-### Historical Winrate Tracking
-- Monthly winrate data stored and displayed over time
-- Interactive line charts showing trends across three battle categories
-- Year selector to view historical performance from 2013 onwards
-- Automatic data updates when searching in the current year
-
-### Leaderboard System
-- Filter by time period: Monthly, Yearly, or All Time
-- Category-specific rankings for different battle types
-- Minimum months played filter to ensure data quality
-- Click any player to navigate to their detailed stats
 
 ## Environment Variables
 
-The application requires several environment variables to connect to backend services:
+All environment variables must be prefixed with `VITE_` to be available in the browser.
 
 | Variable | Description |
 |----------|-------------|
-| `REACT_APP_STATS_API_URL` | API endpoint for player statistics |
-| `REACT_APP_USER_GAME_API_URL` | API endpoint for user game data |
-| `REACT_APP_KIXEYE_AVATAR_API_URL` | API endpoint for player avatars |
-| `REACT_APP_GAME_ID` | Game identifier for API calls |
-| `REACT_APP_BACKEND_API_URL` | Backend API base URL |
-| `REACT_APP_API_SECRET` | API authentication secret |
+| `VITE_STATS_API_URL` | KIXEYE API endpoint for player statistics |
+| `VITE_USER_GAME_API_URL` | KIXEYE API endpoint for user game data |
+| `VITE_KIXEYE_AVATAR_API_URL` | KIXEYE API endpoint for player avatars |
+| `VITE_GAME_ID` | Vega Conflict game identifier |
+| `VITE_BACKEND_API_URL` | Backend API base URL |
+| `VITE_HMAC_SECRET` | Secret key for HMAC-SHA256 request signing |
 
-**Important**: Never commit the `.env` file to version control. Use `.env.example` as a template.
+**Important**: Never commit the `.env` file to version control.
 
 ## Deployment
 
 ### Azure Static Web Apps
 
-The project includes a GitHub Actions workflow for automatic deployment to Azure Static Web Apps:
+The project deploys automatically via GitHub Actions on every push to `main`:
 
-- Workflow file: `.github/workflows/azure-static-web-apps-purple-plant-051730d03.yml`
-- Triggers on push to main branch and pull requests
-- Automatically builds and deploys the application
-- Requires `AZURE_STATIC_WEB_APPS_API_TOKEN` secret configured in GitHub
+- Workflow: `.github/workflows/azure-static-web-apps-purple-plant-051730d03.yml`
+- Build output: `dist/`
+- SPA routing handled by `public/staticwebapp.config.json`
+
+Required GitHub secrets (mapped to `VITE_*` env vars at build time):
+
+| Secret | Maps to |
+|--------|---------|
+| `REACT_APP_STATS_API_URL` | `VITE_STATS_API_URL` |
+| `REACT_APP_USER_GAME_API_URL` | `VITE_USER_GAME_API_URL` |
+| `REACT_APP_KIXEYE_AVATAR_API_URL` | `VITE_KIXEYE_AVATAR_API_URL` |
+| `REACT_APP_GAME_ID` | `VITE_GAME_ID` |
+| `REACT_APP_BACKEND_API_URL` | `VITE_BACKEND_API_URL` |
+| `REACT_APP_HMAC_SECRET` | `VITE_HMAC_SECRET` |
 
 ### Manual Deployment
 
@@ -154,7 +145,7 @@ The project includes a GitHub Actions workflow for automatic deployment to Azure
 npm run build
 ```
 
-2. Deploy the `build` folder to your hosting service of choice
+2. Deploy the `dist` folder to your hosting service of choice
 
 ## Browser Support
 
@@ -163,28 +154,12 @@ npm run build
 - Safari (latest)
 - Edge (latest)
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature-name`
-3. Commit your changes: `git commit -m 'Add some feature'`
-4. Push to the branch: `git push origin feature/your-feature-name`
-5. Open a Pull Request
-
 ## License
 
 This project is private and proprietary.
 
 ## Acknowledgments
 
-- Built with [Create React App](https://create-react-app.dev/)
 - Charts powered by [QuickChart](https://quickchart.io/)
 - Icons from [React Icons](https://react-icons.github.io/react-icons/)
-
-## Support
-
-For issues, questions, or feature requests, please open an issue in the repository.
-
----
-
-**Note**: This application requires valid API credentials and backend services to function properly. Ensure all environment variables are correctly configured before running the application.
+- Built with [Vite](https://vitejs.dev/)
