@@ -2,12 +2,12 @@ import axios from 'axios';
 import HmacClient from './HmacClient';
 import { calculateBattleStats } from '../utils/statsUtil';
 
-const USER_GAME_API_URL = process.env.REACT_APP_USER_GAME_API_URL;
-const STATS_API_URL = process.env.REACT_APP_STATS_API_URL;
-const KIXEYE_AVATAR_API_URL = process.env.REACT_APP_KIXEYE_AVATAR_API_URL;
-const GAME_ID = process.env.REACT_APP_GAME_ID;
-const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
-const HMAC_SECRET = process.env.REACT_APP_HMAC_SECRET;
+const USER_GAME_API_URL = import.meta.env.VITE_USER_GAME_API_URL;
+const STATS_API_URL = import.meta.env.VITE_STATS_API_URL;
+const KIXEYE_AVATAR_API_URL = import.meta.env.VITE_KIXEYE_AVATAR_API_URL;
+const GAME_ID = import.meta.env.VITE_GAME_ID;
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
+const HMAC_SECRET = import.meta.env.VITE_HMAC_SECRET;
 
 if (!HMAC_SECRET) {
   console.error('[ERROR] REACT_APP_HMAC_SECRET is not set! Set this environment variable.');

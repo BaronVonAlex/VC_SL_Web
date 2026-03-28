@@ -27,29 +27,14 @@ const HistoricalData = ({ historicalStats, playerID, onYearChange, currentYear }
 
   return (
     <div className="historical-data">
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '1rem',
-        width: '100%'
-      }}>
-        <h3 style={{ margin: 0, color: '#e1e2e6' }}>Winrate History</h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <label style={{ color: '#a5a6ab', fontSize: '0.9rem' }}>Year:</label>
-          <select 
+      <div className="historical-header">
+        <h3>Winrate History</h3>
+        <div className="year-selector">
+          <label className="year-label">Year:</label>
+          <select
             value={selectedYear}
             onChange={handleYearChange}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '0.5rem',
-              border: '1px solid #3a3b3e',
-              backgroundColor: '#323336',
-              color: '#e1e2e6',
-              fontSize: '1rem',
-              cursor: 'pointer',
-              outline: 'none'
-            }}
+            className="year-select"
           >
             {years.map(year => (
               <option key={year} value={year}>
