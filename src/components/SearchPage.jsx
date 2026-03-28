@@ -138,19 +138,7 @@ useEffect(() => {
         )}
 
         {showMobileSearch && (
-          <div
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
-              zIndex: 1100,
-              padding: '2rem',
-              overflowY: 'auto',
-            }}
-          >
+          <div className="mobile-search-overlay">
             <SearchBar
               onSearch={handleSearch}
               hasResults={false}
@@ -160,65 +148,14 @@ useEffect(() => {
         )}
 
         {loading && (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: '3rem',
-              padding: '2rem',
-              backgroundColor: 'rgba(139, 92, 246, 0.15)',
-              borderRadius: '1rem',
-              border: '2px solid rgba(139, 92, 246, 0.4)',
-              backdropFilter: 'blur(10px)',
-              maxWidth: '400px',
-              margin: '3rem auto',
-            }}
-          >
-            <div
-              style={{
-                width: '50px',
-                height: '50px',
-                border: '4px solid rgba(139, 92, 246, 0.3)',
-                borderTop: '4px solid #8b5cf6',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite',
-                marginBottom: '1rem',
-              }}
-            ></div>
-            <div
-              style={{
-                color: '#ffffff',
-                fontSize: '1.2rem',
-                fontWeight: '600',
-                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
-              }}
-            >
-              Loading player data...
-            </div>
+          <div className="search-loading">
+            <div className="search-loading-spinner"></div>
+            <div className="search-loading-text">Loading player data...</div>
           </div>
         )}
 
         {error && (
-          <div
-            style={{
-              color: '#ffffff',
-              backgroundColor: 'rgba(239, 68, 68, 0.2)',
-              padding: '1rem 1.5rem',
-              borderRadius: '0.75rem',
-              marginTop: '1rem',
-              border: '2px solid rgba(239, 68, 68, 0.5)',
-              backdropFilter: 'blur(10px)',
-              maxWidth: '500px',
-              margin: '1rem auto',
-              textAlign: 'center',
-              fontWeight: '500',
-              textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-            }}
-          >
-            {error}
-          </div>
+          <div className="search-error">{error}</div>
         )}
 
         {!loading && playerData && (

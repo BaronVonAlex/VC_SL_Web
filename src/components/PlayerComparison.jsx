@@ -257,7 +257,7 @@ const PlayerComparison = () => {
                     placeholder="Enter Player ID"
                     value={playerIds[index]}
                     onChange={(e) => handleInputChange(index, e.target.value)}
-                    onKeyPress={(e) => handleKeyPress(e, index)}
+                    onKeyDown={(e) => handleKeyPress(e, index)}
                     className="player-id-input"
                   />
                   <button

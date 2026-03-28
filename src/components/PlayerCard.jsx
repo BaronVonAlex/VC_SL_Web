@@ -1,5 +1,5 @@
 import { FaStar, FaRegStar } from 'react-icons/fa';
-import { useFavorites } from '../../src/components/FavoriteContext.jsx';
+import { useFavorites } from './FavoriteContext.jsx';
 import CombatStats from './CombatStats';
 import HistoricalData from './HistoricalData';
 

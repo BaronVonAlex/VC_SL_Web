@@ -1,4 +1,3 @@
-import React from 'react';
 import { calculateBattleStats } from '../utils/statsUtil';
 
 const getPlayerStat = (data, statName, defaultValue = 0) => {
