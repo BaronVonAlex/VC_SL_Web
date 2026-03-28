@@ -1,28 +1,31 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import SearchPage from './components/SearchPage';
-import Leaderboard from './components/Leaderboard';
-import PlayerComparison from './components/PlayerComparison';
-import Favorites from './components/Favorites';
 import { FavoritesProvider } from './components/FavoriteContext.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { FaSearch, FaTrophy, FaExchangeAlt, FaStar } from 'react-icons/fa';
 import './App.css';
+
+// Eager-load the primary page — it's always needed on first visit
+import SearchPage from './components/SearchPage';
+
+// Lazy-load secondary pages — only fetched when navigated to
+const Leaderboard = lazy(() => import('./components/Leaderboard'));
+const PlayerComparison = lazy(() => import('./components/PlayerComparison'));
+const Favorites = lazy(() => import('./components/Favorites'));
+
+const PageLoader = () => (
+  <div className="page-loader">
+    <div className="page-loader-spinner" />
+  </div>
+);
 
 const Navigation = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isActive = (path) => {
-    return location.pathname === path ? 'active' : '';
-  };
-
-  const closeMobileMenu = () => {
-    setMobileMenuOpen(false);
-  };
-
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
+  const isActive = (path) => location.pathname === path ? 'active' : '';
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+  const toggleMobileMenu = () => setMobileMenuOpen(prev => !prev);
 
   const navLinks = [
     { path: '/', label: 'Player Search', icon: <FaSearch /> },
@@ -50,6 +53,7 @@ const Navigation = () => {
               className={`burger-button ${mobileMenuOpen ? 'active' : ''}`}
               onClick={toggleMobileMenu}
               aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
             >
               <span className="burger-line"></span>
               <span className="burger-line"></span>
@@ -62,7 +66,7 @@ const Navigation = () => {
       <div
         className={`mobile-nav-overlay ${mobileMenuOpen ? 'open' : ''}`}
         onClick={closeMobileMenu}
-      ></div>
+      />
 
       <div className={`mobile-nav-menu ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-nav-links">
@@ -78,9 +82,9 @@ const Navigation = () => {
             </Link>
           ))}
         </div>
-        
+
         <div className="mobile-nav-divider"></div>
-        
+
         <div className="mobile-nav-footer">
           Vega Conflict Player Stats
         </div>
@@ -95,13 +99,17 @@ const App = () => {
       <Router>
         <div className="App">
           <Navigation />
-          
-          <Routes>
-            <Route path="/" element={<SearchPage />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/comparison" element={<PlayerComparison />} />
-            <Route path="/favorites" element={<Favorites />} />
-          </Routes>
+
+          <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<SearchPage />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/comparison" element={<PlayerComparison />} />
+                <Route path="/favorites" element={<Favorites />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </div>
       </Router>
     </FavoritesProvider>

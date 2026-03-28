@@ -1,0 +1,75 @@
+@keyframes skeleton-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  display: block;
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+/* Dark context (leaderboard, player card dark areas) */
+.leaderboard-card .skeleton,
+.player-card .skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.08) 75%);
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+.skeleton-card {
+  pointer-events: none;
+}
+
+.skeleton-mt {
+  margin-top: 0.75rem;
+}
+
+.skeleton-mt-sm {
+  margin-top: 0.4rem;
+}
+
+.skeleton-mb {
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-avatar {
+  margin: 0.75rem auto;
+  display: block !important;
+}
+
+.skeleton-row {
+  margin: 0.5rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skeleton-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.skeleton-chart {
+  margin-top: 1rem;
+}
+
+.skeleton-row-lb {
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .skeleton-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
