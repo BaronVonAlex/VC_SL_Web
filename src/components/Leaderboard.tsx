@@ -1,7 +1,10 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { FaTrophy, FaMedal, FaFilter, FaChartLine, FaChevronDown, FaChevronUp, FaPlus, FaMinus } from 'react-icons/fa';
 import { fetchLeaderboard } from '../services/api';
+import { LeaderboardRowSkeleton } from './Skeleton';
+import type { LeaderboardEntry, LeaderboardFilters } from '../types';
 import '../styles/Leaderboard.css';
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -26,12 +29,9 @@ const months = [
 
 const Leaderboard = () => {
   const navigate = useNavigate();
-  const [leaderboardData, setLeaderboardData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [filtersExpanded, setFiltersExpanded] = useState(false);
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<LeaderboardFilters>({
     period: 2, // AllTime
     category: 0, // Combined
     month: new Date().getMonth() + 1,
@@ -40,54 +40,40 @@ const Leaderboard = () => {
     minimumMonths: 2
   });
 
-  const years = useMemo(() => {
-    const arr = [];
-    for (let y = CURRENT_YEAR; y >= 2013; y--) arr.push(y);
-    return arr;
-  }, []);
+  const [debouncedFilters, setDebouncedFilters] = useState(filters);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    loadLeaderboard();
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setDebouncedFilters(filters), 350);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [filters]);
 
-  const loadLeaderboard = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const data = await fetchLeaderboard(filters);
-      setLeaderboardData(data || []);
-    } catch (err) {
-      console.error('Error fetching leaderboard:', err);
-      setError('Failed to load leaderboard data');
-      setLeaderboardData([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: leaderboardData = [], isLoading, isError } = useQuery<LeaderboardEntry[]>({
+    queryKey: ['leaderboard', debouncedFilters],
+    queryFn: ({ signal }) => fetchLeaderboard(debouncedFilters, signal),
+  });
 
-  const handleFilterChange = useCallback((key, value) => {
+  const handleFilterChange = useCallback((key: keyof LeaderboardFilters, value: number) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   }, []);
 
-  const incrementValue = useCallback((key, min = 1, max = Infinity) => {
-    setFilters(prev => ({ ...prev, [key]: Math.min(prev[key] + 1, max) }));
+  const incrementValue = useCallback((key: keyof LeaderboardFilters, min = 1, max = Infinity) => {
+    setFilters(prev => ({ ...prev, [key]: Math.min((prev[key] as number) + 1, max) }));
   }, []);
 
-  const decrementValue = useCallback((key, min = 1) => {
-    setFilters(prev => ({ ...prev, [key]: Math.max(prev[key] - 1, min) }));
+  const decrementValue = useCallback((key: keyof LeaderboardFilters, min = 1) => {
+    setFilters(prev => ({ ...prev, [key]: Math.max((prev[key] as number) - 1, min) }));
   }, []);
 
-  const handleNumberChange = useCallback((key) => (e) => {
+  const handleNumberChange = useCallback((key: keyof LeaderboardFilters) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    if (val === '' || val === '-') {
-      handleFilterChange(key, '');
-      return;
-    }
+    if (val === '' || val === '-') return;
     const numVal = parseInt(val, 10);
     if (!isNaN(numVal)) handleFilterChange(key, numVal);
   }, [handleFilterChange]);
 
-  const handleNumberBlur = useCallback((key, min = -Infinity, max = Infinity, fallback = min) => (e) => {
+  const handleNumberBlur = useCallback((key: keyof LeaderboardFilters, min = -Infinity, max = Infinity, fallback = min) => (e: React.FocusEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value, 10);
     if (isNaN(val) || val < min) {
       handleFilterChange(key, fallback);
@@ -96,11 +82,11 @@ const Leaderboard = () => {
     }
   }, [handleFilterChange]);
 
-  const handlePlayerClick = (playerId) => {
+  const handlePlayerClick = (playerId: number) => {
     navigate('/', { state: { searchPlayerId: playerId } });
   };
 
-  const getRankIcon = (rank) => {
+  const getRankIcon = (rank: number) => {
     if (rank === 1) return <FaTrophy className="rank-icon gold" />;
     if (rank === 2) return <FaMedal className="rank-icon silver" />;
     if (rank === 3) return <FaMedal className="rank-icon bronze" />;
@@ -258,26 +244,33 @@ const Leaderboard = () => {
           )}
         </div>
 
-        {loading && (
-          <div className="loading-container">
-            <div className="spinner" />
-            <p>Loading leaderboard...</p>
+        {isLoading && (
+          <div className="leaderboard-table">
+            <div className="table-header">
+              <div>RANK</div>
+              <div>PLAYER</div>
+              <div className="text-center">WINRATE</div>
+              <div className="text-center">MONTHS</div>
+            </div>
+            {Array.from({ length: 10 }).map((_, i) => (
+              <LeaderboardRowSkeleton key={i} />
+            ))}
           </div>
         )}
 
-        {error && (
+        {isError && (
           <div className="error-container">
-            {error}
+            Failed to load leaderboard data
           </div>
         )}
 
-        {!loading && !error && leaderboardData.length === 0 && (
+        {!isLoading && !isError && leaderboardData.length === 0 && (
           <div className="empty-state">
             <p>No data available for selected filters</p>
           </div>
         )}
 
-        {!loading && !error && leaderboardData.length > 0 && (
+        {!isLoading && !isError && leaderboardData.length > 0 && (
           <div className="leaderboard-table">
             <div className="table-header">
               <div>RANK</div>
