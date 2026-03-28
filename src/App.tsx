@@ -1,7 +1,7 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { FavoritesProvider } from './components/FavoriteContext.jsx';
-import ErrorBoundary from './components/ErrorBoundary.jsx';
+import { FavoritesProvider } from './components/FavoriteContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import { FaSearch, FaTrophy, FaExchangeAlt, FaStar } from 'react-icons/fa';
 import './App.css';
 
@@ -12,6 +12,21 @@ import SearchPage from './components/SearchPage';
 const Leaderboard = lazy(() => import('./components/Leaderboard'));
 const PlayerComparison = lazy(() => import('./components/PlayerComparison'));
 const Favorites = lazy(() => import('./components/Favorites'));
+
+const PAGE_TITLES: Record<string, string> = {
+  '/': 'Player Search — VC Stats',
+  '/leaderboard': 'Leaderboard — VC Stats',
+  '/comparison': 'Compare Players — VC Stats',
+  '/favorites': 'Favorites — VC Stats',
+};
+
+const PageTitle = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    document.title = PAGE_TITLES[pathname] ?? 'VC Stats';
+  }, [pathname]);
+  return null;
+};
 
 const PageLoader = () => (
   <div className="page-loader">
@@ -98,6 +113,7 @@ const App = () => {
     <FavoritesProvider>
       <Router>
         <div className="App">
+          <PageTitle />
           <Navigation />
 
           <ErrorBoundary>

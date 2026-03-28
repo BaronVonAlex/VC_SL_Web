@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { FaSearch, FaHome, FaTimes } from 'react-icons/fa';
 import '../styles/SearchBar.css';
 
-const SearchBar = ({ onSearch, hasResults, onReset }) => {
+interface SearchBarProps {
+  onSearch: (playerID: string) => void;
+  hasResults: boolean;
+  onReset: () => void;
+}
+
+const SearchBar = ({ onSearch, hasResults, onReset }: SearchBarProps) => {
   const [playerID, setPlayerID] = useState('');
   const [error, setError] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -20,7 +26,7 @@ const SearchBar = ({ onSearch, hasResults, onReset }) => {
     setIsExpanded(false);
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSearch();
     }

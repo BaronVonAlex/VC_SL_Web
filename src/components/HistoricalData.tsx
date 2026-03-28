@@ -1,26 +1,32 @@
 import { useState, useEffect } from 'react';
 import Chart from './Chart';
+import type { WinrateEntry } from '../types';
 
-const HistoricalData = ({ historicalStats, playerID, onYearChange, currentYear }) => {
+interface HistoricalDataProps {
+  historicalStats: WinrateEntry[];
+  playerID: number;
+  onYearChange: (year: number) => void;
+  currentYear: number;
+}
+
+const HistoricalData = ({ historicalStats, playerID, onYearChange, currentYear }: HistoricalDataProps) => {
   const defaultYear = currentYear || new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(defaultYear);
 
   useEffect(() => {
     setSelectedYear(defaultYear);
   }, [defaultYear]);
-  
+
   const latestYear = new Date().getFullYear();
-  const years = [];
+  const years: number[] = [];
   for (let year = latestYear; year >= 2013; year--) {
     years.push(year);
   }
 
-  const handleYearChange = (e) => {
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const year = parseInt(e.target.value);
     setSelectedYear(year);
-    if (onYearChange) {
-      onYearChange(year);
-    }
+    onYearChange(year);
   };
 
   const stats = Array.isArray(historicalStats) ? historicalStats : [];

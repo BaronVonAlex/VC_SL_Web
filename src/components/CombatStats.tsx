@@ -1,10 +1,12 @@
 import { calculateBattleStats } from '../utils/statsUtil';
+import type { PlayerData } from '../types';
 
-const getPlayerStat = (data, statName, defaultValue = 0) => {
-  return data[statName] !== undefined ? data[statName] : defaultValue;
+const getPlayerStat = (data: PlayerData, statName: keyof PlayerData, defaultValue = 0): number => {
+  const val = data[statName];
+  return typeof val === 'number' ? val : defaultValue;
 };
 
-const CombatStats = ({ playerData }) => {
+const CombatStats = ({ playerData }: { playerData: PlayerData }) => {
   const baseAttackStats = calculateBattleStats(
     getPlayerStat(playerData, 'baseAttackWin'),
     getPlayerStat(playerData, 'baseAttackDraw'),

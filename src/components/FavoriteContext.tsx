@@ -1,8 +1,17 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import type { Favorite } from '../types';
 
-const FavoritesContext = createContext();
+interface FavoritesContextValue {
+  favorites: Favorite[];
+  addFavorite: (playerId: number, playerName: string) => void;
+  removeFavorite: (playerId: number) => void;
+  isFavorite: (playerId: number) => boolean;
+  toggleFavorite: (playerId: number, playerName: string) => void;
+}
 
-export const useFavorites = () => {
+const FavoritesContext = createContext<FavoritesContextValue | null>(null);
+
+export const useFavorites = (): FavoritesContextValue => {
   const context = useContext(FavoritesContext);
   if (!context) {
     throw new Error('useFavorites must be used within FavoritesProvider');
@@ -10,37 +19,43 @@ export const useFavorites = () => {
   return context;
 };
 
-export const FavoritesProvider = ({ children }) => {
-  const [favorites, setFavorites] = useState([]);
+const STORAGE_KEY = 'favoritePlayerIds';
+
+const loadFromStorage = (): Favorite[] => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? (JSON.parse(stored) as Favorite[]) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveToStorage = (favorites: Favorite[]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+  } catch {
+    // localStorage unavailable (private browsing quota, etc.)
+  }
+};
+
+export const FavoritesProvider = ({ children }: { children: React.ReactNode }) => {
+  const [favorites, setFavorites] = useState<Favorite[]>(loadFromStorage);
 
   useEffect(() => {
-    const stored = localStorage.getItem('favoritePlayerIds');
-    if (stored) {
-      try {
-        setFavorites(JSON.parse(stored));
-      } catch (e) {
-        console.error('Failed to parse favorites:', e);
-      }
-    }
-  }, []);
+    saveToStorage(favorites);
+  }, [favorites]);
 
-  const addFavorite = (playerId, playerName) => {
-    const newFavorites = [...favorites, { id: playerId, name: playerName, addedAt: Date.now() }];
-    setFavorites(newFavorites);
-    localStorage.setItem('favoritePlayerIds', JSON.stringify(newFavorites));
+  const addFavorite = (playerId: number, playerName: string) => {
+    setFavorites(prev => [...prev, { id: playerId, name: playerName, addedAt: Date.now() }]);
   };
 
-  const removeFavorite = (playerId) => {
-    const newFavorites = favorites.filter(f => f.id !== playerId);
-    setFavorites(newFavorites);
-    localStorage.setItem('favoritePlayerIds', JSON.stringify(newFavorites));
+  const removeFavorite = (playerId: number) => {
+    setFavorites(prev => prev.filter(f => f.id !== playerId));
   };
 
-  const isFavorite = (playerId) => {
-    return favorites.some(f => f.id === playerId);
-  };
+  const isFavorite = (playerId: number) => favorites.some(f => f.id === playerId);
 
-  const toggleFavorite = (playerId, playerName) => {
+  const toggleFavorite = (playerId: number, playerName: string) => {
     if (isFavorite(playerId)) {
       removeFavorite(playerId);
     } else {

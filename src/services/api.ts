@@ -224,6 +224,7 @@ export const fetchPlayerDetails = async (playerID: string, year?: number, signal
       usernameHistory: Array.isArray(history) ? history : [history],
     };
   } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') throw error;
     console.error('Error in fetchPlayerDetails:', error);
     throw new Error(`Failed to fetch player details: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }

@@ -52,7 +52,8 @@ const SearchPage = () => {
     setShowMobileSearch(prev => !prev);
   };
 
-  const showResults = !!currentPlayerID && !!playerDetails && !isLoading;
+  const searchStarted = !!currentPlayerID;
+  const showResults = searchStarted && !!playerDetails && !isLoading;
   const errorMessage = isError
     ? (error instanceof Error ? error.message : 'Failed to fetch player data. Please check the Player ID and try again.')
     : null;
@@ -80,11 +81,11 @@ const SearchPage = () => {
     : null;
 
   return (
-    <div className={`App ${showResults ? 'has-results' : ''}`}>
+    <div className={`App ${searchStarted ? 'has-results' : ''}`}>
       <header className="App-header">
         <SearchBar
           onSearch={handleSearch}
-          hasResults={showResults && !showMobileSearch}
+          hasResults={searchStarted && !showMobileSearch}
           onReset={handleReset}
         />
 
