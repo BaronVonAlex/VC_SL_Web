@@ -123,20 +123,44 @@ export const getWinrateForUser = async (userId: string | number, year: number, s
   }
 };
 
+interface WinrateUpdatePayload {
+  baseAttackWinrate: number;
+  baseDefenceWinrate: number;
+  fleetWinrate: number;
+  baseAttackWin: number;
+  baseAttackLoss: number;
+  baseAttackDraw: number;
+  baseDefenceWin: number;
+  baseDefenceLoss: number;
+  baseDefenceDraw: number;
+  fleetWin: number;
+  fleetLoss: number;
+  fleetDraw: number;
+}
+
 export const updateWinrateStats = async (
   userId: string | number,
   month: number,
   year: number,
-  winrateData: { baseAttackWinrate: number; baseDefenceWinrate: number; fleetWinrate: number }
+  data: WinrateUpdatePayload
 ): Promise<unknown> => {
   try {
     return await hmacClient.post(`/api/Winrate/UpdateWinrate`, {
       userId: parseInt(String(userId)),
       month,
       year,
-      baseAttackWinrate: winrateData.baseAttackWinrate ?? 0,
-      baseDefenceWinrate: winrateData.baseDefenceWinrate ?? 0,
-      fleetWinrate: winrateData.fleetWinrate ?? 0,
+      baseAttackWinrate: data.baseAttackWinrate ?? 0,
+      baseDefenceWinrate: data.baseDefenceWinrate ?? 0,
+      fleetWinrate: data.fleetWinrate ?? 0,
+      baseAttackWin: data.baseAttackWin ?? 0,
+      baseAttackLoss: data.baseAttackLoss ?? 0,
+      baseAttackDraw: data.baseAttackDraw ?? 0,
+      baseDefenceWin: data.baseDefenceWin ?? 0,
+      baseDefenceLoss: data.baseDefenceLoss ?? 0,
+      baseDefenceDraw: data.baseDefenceDraw ?? 0,
+      fleetWin: data.fleetWin ?? 0,
+      fleetLoss: data.fleetLoss ?? 0,
+      fleetDraw: data.fleetDraw ?? 0,
     });
   } catch (error) {
     console.error('Error updating winrate stats:', error);
@@ -201,6 +225,15 @@ export const fetchPlayerDetails = async (playerID: string, year?: number, signal
       baseAttackWinrate: parseFloat(baseAttackStats.winratePercent) || 0,
       baseDefenceWinrate: parseFloat(baseDefenceStats.winratePercent) || 0,
       fleetWinrate: parseFloat(fleetStats.winratePercent) || 0,
+      baseAttackWin: playerData.baseAttackWin ?? 0,
+      baseAttackLoss: playerData.baseAttackLoss ?? 0,
+      baseAttackDraw: playerData.baseAttackDraw ?? 0,
+      baseDefenceWin: playerData.baseDefenceWin ?? 0,
+      baseDefenceLoss: playerData.baseDefenceLoss ?? 0,
+      baseDefenceDraw: playerData.baseDefenceDraw ?? 0,
+      fleetWin: playerData.fleetWin ?? 0,
+      fleetLoss: playerData.fleetLoss ?? 0,
+      fleetDraw: playerData.fleetDraw ?? 0,
     };
 
     const now = new Date();

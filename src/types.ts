@@ -38,6 +38,16 @@ export interface WinrateEntry {
   fleetWinrate: number;
   baseAttackWinrate: number;
   baseDefenceWinrate: number;
+  // Raw battle counts (present on entries recorded after backend update)
+  baseAttackWin?: number;
+  baseAttackLoss?: number;
+  baseAttackDraw?: number;
+  baseDefenceWin?: number;
+  baseDefenceLoss?: number;
+  baseDefenceDraw?: number;
+  fleetWin?: number;
+  fleetLoss?: number;
+  fleetDraw?: number;
 }
 
 export interface PlayerDetails {
